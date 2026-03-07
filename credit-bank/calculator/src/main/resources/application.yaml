@@ -3,3 +3,8 @@ spring:
     name: calculator
 server:
   port: 8081
+loan:
+  base-rate: 12
+  insurance-cost: 100000
+  insurance-discount: 3
+  salary-client-discount: 1

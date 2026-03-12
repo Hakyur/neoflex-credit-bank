@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.rogotovsky.calculator.dto.ScoringDataDto;
 import ru.rogotovsky.calculator.enums.EmploymentStatus;
 import ru.rogotovsky.calculator.enums.Gender;
+import ru.rogotovsky.calculator.exception.ScoringException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,23 +35,23 @@ public class ScoringService {
         int age = Period.between(requestDto.birthdate(), LocalDate.now()).getYears();
 
         if (age < 20 || age > 65) {
-            throw new IllegalArgumentException("Age restriction");
+            throw new ScoringException("Age must be between 20 and 65");
         }
 
         if (requestDto.employment().employmentStatus() == EmploymentStatus.UNEMPLOYED) {
-            throw new IllegalArgumentException("EmploymentStatus is unemployed");
+            throw new ScoringException("Client is unemployed");
         }
 
         if (requestDto.amount().compareTo(requestDto.employment().salary().multiply(BigDecimal.valueOf(24))) > 0) {
-            throw new IllegalArgumentException("Loan amount too large");
+            throw new ScoringException("Requested amount is too large");
         }
 
         if (requestDto.employment().workExperienceTotal() < 18) {
-            throw new IllegalArgumentException("Not enough total work experience");
+            throw new ScoringException("Total work experience must be at least 18 months");
         }
 
         if (requestDto.employment().workExperienceCurrent() < 3) {
-            throw new IllegalArgumentException("Not enough current work experience");
+            throw new ScoringException("Current work experience must be at least 3 months");
         }
     }
 

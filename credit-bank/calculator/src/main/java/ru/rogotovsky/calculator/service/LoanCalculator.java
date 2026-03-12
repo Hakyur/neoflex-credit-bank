@@ -1,5 +1,6 @@
 package ru.rogotovsky.calculator.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.rogotovsky.calculator.dto.PaymentScheduleElementDto;
 
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class LoanCalculator {
 
@@ -19,12 +21,14 @@ public class LoanCalculator {
                 .divide(BigDecimal.valueOf(12), 10, RoundingMode.HALF_UP);
 
         BigDecimal pow = monthlyRate.add(BigDecimal.ONE).pow(term);
-
         BigDecimal numerator = amount.multiply(monthlyRate).multiply(pow);
-
         BigDecimal denominator = pow.subtract(BigDecimal.ONE);
 
-        return numerator.divide(denominator, 2, RoundingMode.HALF_UP);
+        BigDecimal monthlyPayment = numerator.divide(denominator, 2, RoundingMode.HALF_UP);
+        log.debug("MonthlyPayment calculation -> amount: {}, rate: {}, term: {}, monthlyPayment: {}",
+                amount, rate, term, monthlyPayment);
+
+        return monthlyPayment;
     }
 
     public List<PaymentScheduleElementDto> buildPaymentSchedule(
@@ -44,21 +48,13 @@ public class LoanCalculator {
 
         for (int i = 1; i <= term; i++) {
 
-            BigDecimal interestPayment =
-                    remainingDebt.multiply(monthlyRate)
+            BigDecimal interestPayment = remainingDebt.multiply(monthlyRate)
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            BigDecimal debtPayment = monthlyPayment.subtract(interestPayment)
                             .setScale(2, RoundingMode.HALF_UP);
 
-            BigDecimal debtPayment =
-                    monthlyPayment.subtract(interestPayment)
-                            .setScale(2, RoundingMode.HALF_UP);
-
-            remainingDebt =
-                    remainingDebt.subtract(debtPayment)
-                            .setScale(2, RoundingMode.HALF_UP);
-
-            if (remainingDebt.compareTo(BigDecimal.ZERO) < 0) {
-                remainingDebt = BigDecimal.ZERO;
-            }
+            remainingDebt = remainingDebt.subtract(debtPayment).max(BigDecimal.ZERO);
 
             schedule.add(new PaymentScheduleElementDto(
                     i,
@@ -68,8 +64,10 @@ public class LoanCalculator {
                     debtPayment,
                     remainingDebt
             ));
+            log.debug("Schedule month {} -> interest: {}, debt: {}, remaining: {}", i, interestPayment, debtPayment, remainingDebt);
         }
 
+        log.info("Built payment schedule: {}", schedule);
         return schedule;
     }
 
@@ -77,9 +75,16 @@ public class LoanCalculator {
         BigDecimal monthlyPayment = calculateMonthlyPayment(amount, rate, term);
         BigDecimal paymentsAmount = monthlyPayment.multiply(BigDecimal.valueOf(term));
         BigDecimal ratio = paymentsAmount.divide(amount, 10, RoundingMode.HALF_UP);
-        return ratio
+
+        log.debug("PSK calculation -> amount: {}, rate: {}, term: {}, monthlyPayment: {}, paymentsAmount: {}",
+                amount, rate, term, monthlyPayment, paymentsAmount);
+
+        BigDecimal psk = ratio
                 .subtract(BigDecimal.ONE)
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(2, RoundingMode.HALF_UP);
+
+        log.info("PSK: {}", psk);
+        return psk;
     }
 }

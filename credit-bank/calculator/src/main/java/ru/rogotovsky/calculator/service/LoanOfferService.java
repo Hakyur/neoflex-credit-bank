@@ -1,6 +1,7 @@
 package ru.rogotovsky.calculator.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.rogotovsky.calculator.dto.LoanOfferDto;
 import ru.rogotovsky.calculator.dto.LoanStatementRequestDto;
@@ -10,6 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoanOfferService {
@@ -18,6 +20,8 @@ public class LoanOfferService {
     private final PreScoringService preScoringService;
 
     public List<LoanOfferDto> calculateLoanOffers(LoanStatementRequestDto requestDto) {
+        log.info("Calculating loan offers for request: {}", requestDto);
+
         List<LoanOfferDto> loanOffers = List.of(
                 createLoanOffer(requestDto, false, false),
                 createLoanOffer(requestDto, false, true),
@@ -25,9 +29,13 @@ public class LoanOfferService {
                 createLoanOffer(requestDto, true, true)
         );
 
-        return loanOffers.stream()
+        loanOffers = loanOffers.stream()
                 .sorted(Comparator.comparing(LoanOfferDto::rate).reversed())
                 .toList();
+
+        log.info("Returning loan offers: {}", loanOffers);
+
+        return loanOffers;
     }
 
     private LoanOfferDto createLoanOffer(
@@ -37,8 +45,10 @@ public class LoanOfferService {
 
         BigDecimal rate = preScoringService.calculatePrescoringRate(isInsuranceEnabled, isSalaryClient);
         BigDecimal totalAmount = preScoringService.calculatePrescoringAmount(requestDto.amount(), isInsuranceEnabled);
-
         BigDecimal monthlyPayment =  loanCalculator.calculateMonthlyPayment(totalAmount, rate, requestDto.term());
+
+        log.debug("LoanOffer calculation -> insurance: {}, salaryClient: {}, rate: {}, totalAmount: {}, monthlyPayment: {}",
+                isInsuranceEnabled, isSalaryClient, rate, totalAmount, monthlyPayment);
 
         return new LoanOfferDto(
                 UUID.randomUUID(),

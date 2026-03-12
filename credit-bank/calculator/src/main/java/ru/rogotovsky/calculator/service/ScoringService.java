@@ -1,6 +1,7 @@
 package ru.rogotovsky.calculator.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.rogotovsky.calculator.dto.ScoringDataDto;
 import ru.rogotovsky.calculator.enums.EmploymentStatus;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ScoringService {
@@ -18,16 +20,22 @@ public class ScoringService {
     private final PreScoringService preScoringService;
 
     public BigDecimal calculateRate(ScoringDataDto requestDto) {
+        log.info("Starting scoring calculation for client: {} {}",
+                requestDto.firstName(), requestDto.lastName());
+
         validate(requestDto);
 
         BigDecimal rate = preScoringService
                 .calculatePrescoringRate(requestDto.isInsuranceEnabled(), requestDto.isSalaryClient());
+
+        log.debug("Rate after prescoring: {}", rate);
 
         rate = applyEmploymentScoring(requestDto, rate);
         rate = applyPositionScoring(requestDto, rate);
         rate = applyMaritalStatusScoring(requestDto, rate);
         rate = applyGenderScoring(requestDto, rate);
 
+        log.info("Final calculated rate: {}", rate);
         return rate;
     }
 
@@ -35,65 +43,80 @@ public class ScoringService {
         int age = Period.between(requestDto.birthdate(), LocalDate.now()).getYears();
 
         if (age < 20 || age > 65) {
+            log.warn("Scoring validation failed: age {} is outside allowed range", age);
             throw new ScoringException("Age must be between 20 and 65");
         }
 
         if (requestDto.employment().employmentStatus() == EmploymentStatus.UNEMPLOYED) {
+            log.warn("Scoring validation failed: client is unemployed");
             throw new ScoringException("Client is unemployed");
         }
 
         if (requestDto.amount().compareTo(requestDto.employment().salary().multiply(BigDecimal.valueOf(24))) > 0) {
+            log.warn("Scoring validation failed: requested amount {} is too large for salary {}",
+                    requestDto.amount(), requestDto.employment().salary());
             throw new ScoringException("Requested amount is too large");
         }
 
         if (requestDto.employment().workExperienceTotal() < 18) {
+            log.warn("Scoring validation failed: total work experience {} months",
+                    requestDto.employment().workExperienceTotal());
             throw new ScoringException("Total work experience must be at least 18 months");
         }
 
         if (requestDto.employment().workExperienceCurrent() < 3) {
+            log.warn("Scoring validation failed: current work experience {} months",
+                    requestDto.employment().workExperienceCurrent());
             throw new ScoringException("Current work experience must be at least 3 months");
         }
     }
 
     private BigDecimal applyEmploymentScoring(ScoringDataDto requestDto, BigDecimal rate) {
-        return switch (requestDto.employment().employmentStatus()) {
+        BigDecimal newRate = switch (requestDto.employment().employmentStatus()) {
             case SELF_EMPLOYED -> rate.add(BigDecimal.valueOf(2));
             case BUSINESS_OWNER ->  rate.add(BigDecimal.ONE);
             default -> rate;
         };
+
+        log.debug("Rate after employment scoring: {}", newRate);
+        return newRate;
     }
 
     private BigDecimal applyPositionScoring(ScoringDataDto requestDto, BigDecimal rate) {
-        return switch (requestDto.employment().position()) {
+        BigDecimal newRate = switch (requestDto.employment().position()) {
             case MID_MANAGER -> rate.subtract(BigDecimal.valueOf(2));
             case TOP_MANAGER -> rate.subtract(BigDecimal.valueOf(3));
             default -> rate;
         };
+
+        log.debug("Rate after position scoring: {}", newRate);
+        return newRate;
     }
 
     private BigDecimal applyMaritalStatusScoring(ScoringDataDto requestDto, BigDecimal rate) {
-        return switch (requestDto.maritalStatus()) {
+        BigDecimal newRate = switch (requestDto.maritalStatus()) {
             case MARRIED -> rate.subtract(BigDecimal.valueOf(3));
             case DIVORCED -> rate.add(BigDecimal.ONE);
             default -> rate;
         };
+
+        log.debug("Rate after marital status scoring: {}", newRate);
+        return newRate;
     }
 
     private BigDecimal applyGenderScoring(ScoringDataDto requestDto, BigDecimal rate) {
         int age = Period.between(requestDto.birthdate(), LocalDate.now()).getYears();
+        BigDecimal newRate = rate;
 
         if (requestDto.gender() == Gender.FEMALE && age >= 32 && age <= 60) {
-            return rate.subtract(BigDecimal.valueOf(3));
+            newRate = rate.subtract(BigDecimal.valueOf(3));
+        } else if (requestDto.gender() == Gender.MALE && age >= 30 && age <= 55) {
+            newRate = rate.subtract(BigDecimal.valueOf(3));
+        } else if (requestDto.gender() == Gender.NON_BINARY) {
+            newRate = rate.subtract(BigDecimal.ONE);
         }
 
-        if (requestDto.gender() == Gender.MALE && age >= 30 && age <= 55) {
-            return rate.subtract(BigDecimal.valueOf(3));
-        }
-
-        if (requestDto.gender() == Gender.NON_BINARY) {
-            return rate.add(BigDecimal.valueOf(7));
-        }
-
-        return rate;
+        log.debug("Rate after gender scoring: {}", newRate);
+        return newRate;
     }
 }

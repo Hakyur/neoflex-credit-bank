@@ -4,7 +4,7 @@ spring:
 server:
   port: 8081
 loan:
-  base-rate: 12
+  base-rate: 20
   insurance-cost: 100000
   insurance-discount: 3
   salary-client-discount: 1

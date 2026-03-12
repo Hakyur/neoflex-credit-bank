@@ -2,10 +2,8 @@ package ru.rogotovsky.calculator.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.rogotovsky.calculator.config.LoanProperties;
 import ru.rogotovsky.calculator.dto.LoanOfferDto;
 import ru.rogotovsky.calculator.dto.LoanStatementRequestDto;
-import ru.rogotovsky.calculator.service.utils.LoanCalculationUtils;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
@@ -16,7 +14,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LoanOfferService {
 
-    private final LoanProperties loanProperties;
+    private final LoanCalculator loanCalculator;
+    private final PreScoringService preScoringService;
 
     public List<LoanOfferDto> calculateLoanOffers(LoanStatementRequestDto requestDto) {
         List<LoanOfferDto> loanOffers = List.of(
@@ -36,19 +35,10 @@ public class LoanOfferService {
             boolean isInsuranceEnabled,
             boolean isSalaryClient) {
 
-        BigDecimal rate = loanProperties.getBaseRate();
-        BigDecimal totalAmount = requestDto.amount();
+        BigDecimal rate = preScoringService.calculatePrescoringRate(isInsuranceEnabled, isSalaryClient);
+        BigDecimal totalAmount = preScoringService.calculatePrescoringAmount(requestDto.amount(), isInsuranceEnabled);
 
-        if (isInsuranceEnabled) {
-            totalAmount = totalAmount.add(loanProperties.getInsuranceCost());
-            rate = rate.subtract(loanProperties.getInsuranceDiscount());
-        }
-
-        if (isSalaryClient) {
-            rate = rate.subtract(loanProperties.getSalaryClientDiscount());
-        }
-
-        BigDecimal monthlyPayment =  LoanCalculationUtils.calculateMonthlyPayment(totalAmount, rate, requestDto.term());
+        BigDecimal monthlyPayment =  loanCalculator.calculateMonthlyPayment(totalAmount, rate, requestDto.term());
 
         return new LoanOfferDto(
                 UUID.randomUUID(),

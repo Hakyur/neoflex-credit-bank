@@ -10,7 +10,8 @@ import ru.rogotovsky.calculator.dto.CreditDto;
 import ru.rogotovsky.calculator.dto.LoanOfferDto;
 import ru.rogotovsky.calculator.dto.LoanStatementRequestDto;
 import ru.rogotovsky.calculator.dto.ScoringDataDto;
-import ru.rogotovsky.calculator.service.CalculatorService;
+import ru.rogotovsky.calculator.service.CreditService;
+import ru.rogotovsky.calculator.service.LoanOfferService;
 
 import java.util.List;
 
@@ -19,15 +20,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CalculatorController {
 
-    private final CalculatorService calculatorService;
+    private final LoanOfferService loanOfferService;
+    private final CreditService creditService;
 
     @PostMapping("/offers")
     public ResponseEntity<List<LoanOfferDto>> calculateLoanOffers(@RequestBody LoanStatementRequestDto requestDto) {
-        return ResponseEntity.ok(calculatorService.calculateLoanOffers(requestDto));
+        return ResponseEntity.ok(loanOfferService.calculateLoanOffers(requestDto));
     }
 
     @PostMapping("/calc")
     public ResponseEntity<CreditDto> calculateCredit(@RequestBody ScoringDataDto requestDto) {
-        return null;
+        return ResponseEntity.ok(creditService.calculateCredit(requestDto));
     }
 }

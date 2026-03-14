@@ -53,6 +53,7 @@ public record LoanStatementRequestDto(
 
         @NotNull(message = "Birthdate must not be null")
         @Past(message = "Birthdate must be in the past")
+        @Adult
         @Schema(description = "Client birthdate", example = "2005-01-06")
         LocalDate birthdate,
 

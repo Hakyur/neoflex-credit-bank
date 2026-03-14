@@ -39,7 +39,7 @@ public class ScoringService {
         return rate;
     }
 
-    private void validate(ScoringDataDto requestDto) {
+    public void validate(ScoringDataDto requestDto) {
         int age = Period.between(requestDto.birthdate(), LocalDate.now()).getYears();
 
         if (age < 20 || age > 65) {
@@ -71,27 +71,27 @@ public class ScoringService {
         }
     }
 
-    private BigDecimal applyEmploymentScoring(ScoringDataDto requestDto, BigDecimal rate) {
+    public BigDecimal applyEmploymentScoring(ScoringDataDto requestDto, BigDecimal rate) {
         BigDecimal newRate = requestDto.employment().employmentStatus().applyRate(rate);
         log.debug("Rate after employment scoring: {}", newRate);
         return newRate;
     }
 
-    private BigDecimal applyPositionScoring(ScoringDataDto requestDto, BigDecimal rate) {
+    public BigDecimal applyPositionScoring(ScoringDataDto requestDto, BigDecimal rate) {
         BigDecimal newRate = requestDto.employment().position().applyRate(rate);
 
         log.debug("Rate after position scoring: {}", newRate);
         return newRate;
     }
 
-    private BigDecimal applyMaritalStatusScoring(ScoringDataDto requestDto, BigDecimal rate) {
+    public BigDecimal applyMaritalStatusScoring(ScoringDataDto requestDto, BigDecimal rate) {
         BigDecimal newRate = requestDto.maritalStatus().applyRate(rate);
 
         log.debug("Rate after marital status scoring: {}", newRate);
         return newRate;
     }
 
-    private BigDecimal applyGenderScoring(ScoringDataDto requestDto, BigDecimal rate) {
+    public BigDecimal applyGenderScoring(ScoringDataDto requestDto, BigDecimal rate) {
         int age = Period.between(requestDto.birthdate(), LocalDate.now()).getYears();
         BigDecimal newRate = rate;
 

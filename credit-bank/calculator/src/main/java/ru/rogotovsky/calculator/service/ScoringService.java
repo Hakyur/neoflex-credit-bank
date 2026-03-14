@@ -72,33 +72,20 @@ public class ScoringService {
     }
 
     private BigDecimal applyEmploymentScoring(ScoringDataDto requestDto, BigDecimal rate) {
-        BigDecimal newRate = switch (requestDto.employment().employmentStatus()) {
-            case SELF_EMPLOYED -> rate.add(BigDecimal.valueOf(2));
-            case BUSINESS_OWNER ->  rate.add(BigDecimal.ONE);
-            default -> rate;
-        };
-
+        BigDecimal newRate = requestDto.employment().employmentStatus().applyRate(rate);
         log.debug("Rate after employment scoring: {}", newRate);
         return newRate;
     }
 
     private BigDecimal applyPositionScoring(ScoringDataDto requestDto, BigDecimal rate) {
-        BigDecimal newRate = switch (requestDto.employment().position()) {
-            case MID_MANAGER -> rate.subtract(BigDecimal.valueOf(2));
-            case TOP_MANAGER -> rate.subtract(BigDecimal.valueOf(3));
-            default -> rate;
-        };
+        BigDecimal newRate = requestDto.employment().position().applyRate(rate);
 
         log.debug("Rate after position scoring: {}", newRate);
         return newRate;
     }
 
     private BigDecimal applyMaritalStatusScoring(ScoringDataDto requestDto, BigDecimal rate) {
-        BigDecimal newRate = switch (requestDto.maritalStatus()) {
-            case MARRIED -> rate.subtract(BigDecimal.valueOf(3));
-            case DIVORCED -> rate.add(BigDecimal.ONE);
-            default -> rate;
-        };
+        BigDecimal newRate = requestDto.maritalStatus().applyRate(rate);
 
         log.debug("Rate after marital status scoring: {}", newRate);
         return newRate;
@@ -109,11 +96,11 @@ public class ScoringService {
         BigDecimal newRate = rate;
 
         if (requestDto.gender() == Gender.FEMALE && age >= 32 && age <= 60) {
-            newRate = rate.subtract(BigDecimal.valueOf(3));
+            newRate = requestDto.gender().applyRate(rate);
         } else if (requestDto.gender() == Gender.MALE && age >= 30 && age <= 55) {
-            newRate = rate.subtract(BigDecimal.valueOf(3));
+            newRate = requestDto.gender().applyRate(rate);
         } else if (requestDto.gender() == Gender.NON_BINARY) {
-            newRate = rate.subtract(BigDecimal.ONE);
+            newRate = requestDto.gender().applyRate(rate);
         }
 
         log.debug("Rate after gender scoring: {}", newRate);

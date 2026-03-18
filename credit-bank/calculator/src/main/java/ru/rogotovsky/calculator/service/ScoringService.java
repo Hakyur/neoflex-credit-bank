@@ -12,6 +12,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 
+import static ru.rogotovsky.calculator.util.NumberForScoringUtils.*;
+import static ru.rogotovsky.calculator.util.StringForExceptionsUtils.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -42,32 +45,32 @@ public class ScoringService {
     public void validate(ScoringDataDto requestDto) {
         int age = Period.between(requestDto.birthdate(), LocalDate.now()).getYears();
 
-        if (age < 20 || age > 65) {
+        if (age < MIN_VALID_AGE || age > MAX_VALID_AGE) {
             log.warn("Scoring validation failed: age {} is outside allowed range", age);
-            throw new ScoringException("Age must be between 20 and 65");
+            throw new ScoringException(AGE_INVALID);
         }
 
         if (requestDto.employment().employmentStatus() == EmploymentStatus.UNEMPLOYED) {
             log.warn("Scoring validation failed: client is unemployed");
-            throw new ScoringException("Client is unemployed");
+            throw new ScoringException(CLIENT_UNEMPLOYED);
         }
 
-        if (requestDto.amount().compareTo(requestDto.employment().salary().multiply(BigDecimal.valueOf(24))) > 0) {
+        if (requestDto.amount().compareTo(requestDto.employment().salary().multiply(BigDecimal.valueOf(MAX_SALARY_MULTIPLIER))) > 0) {
             log.warn("Scoring validation failed: requested amount {} is too large for salary {}",
                     requestDto.amount(), requestDto.employment().salary());
-            throw new ScoringException("Requested amount is too large");
+            throw new ScoringException(AMOUNT_TOO_LARGE);
         }
 
-        if (requestDto.employment().workExperienceTotal() < 18) {
+        if (requestDto.employment().workExperienceTotal() < MIN_TOTAL_WORK_EXPERIENCE) {
             log.warn("Scoring validation failed: total work experience {} months",
                     requestDto.employment().workExperienceTotal());
-            throw new ScoringException("Total work experience must be at least 18 months");
+            throw new ScoringException(TOTAL_WORK_EXPERIENCE_INVALID);
         }
 
-        if (requestDto.employment().workExperienceCurrent() < 3) {
+        if (requestDto.employment().workExperienceCurrent() < MIN_CURRENT_WORK_EXPERIENCE) {
             log.warn("Scoring validation failed: current work experience {} months",
                     requestDto.employment().workExperienceCurrent());
-            throw new ScoringException("Current work experience must be at least 3 months");
+            throw new ScoringException(CURRENT_WORK_EXPERIENCE_INVALID);
         }
     }
 
@@ -95,9 +98,9 @@ public class ScoringService {
         int age = Period.between(requestDto.birthdate(), LocalDate.now()).getYears();
         BigDecimal newRate = rate;
 
-        if (requestDto.gender() == Gender.FEMALE && age >= 32 && age <= 60) {
+        if (requestDto.gender() == Gender.FEMALE && age >= FEMALE_MIN_AGE && age <= FEMALE_MAX_AGE) {
             newRate = requestDto.gender().applyRate(rate);
-        } else if (requestDto.gender() == Gender.MALE && age >= 30 && age <= 55) {
+        } else if (requestDto.gender() == Gender.MALE && age >= MALE_MIN_AGE && age <= MALE_MAX_AGE) {
             newRate = requestDto.gender().applyRate(rate);
         } else if (requestDto.gender() == Gender.NON_BINARY) {
             newRate = requestDto.gender().applyRate(rate);

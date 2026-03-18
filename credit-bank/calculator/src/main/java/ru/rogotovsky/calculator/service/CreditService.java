@@ -32,8 +32,6 @@ public class CreditService {
 
         BigDecimal psk = loanCalculator.calculatePSK(amount, rate, term);
 
-        log.info("Credit calculation completed -> amount: {}, rate: {}, monthlyPayment: {}, psk: {}, schedule: {}",
-                amount, rate, monthlyPayment, psk, schedule);
         return new CreditDto(
                 amount,
                 term,

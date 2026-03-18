@@ -46,7 +46,7 @@ public record ScoringDataDto(
         @Schema(description = "Marital status")
         MaritalStatus maritalStatus,
 
-        @Schema(description = "?")
+        @Schema(description = "Number of dependents", example = "2")
         Integer dependentAmount,
 
         @Schema(description = "Employment information")

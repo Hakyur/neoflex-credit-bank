@@ -2,7 +2,7 @@ package ru.rogotovsky.calculator.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import ru.rogotovsky.calculator.validator.Adult;
+import ru.rogotovsky.calculator.validator.AgeVerification;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -53,7 +53,7 @@ public record LoanStatementRequestDto(
 
         @NotNull(message = "Birthdate must not be null")
         @Past(message = "Birthdate must be in the past")
-        @Adult
+        @AgeVerification
         @Schema(description = "Client birthdate", example = "2005-01-06")
         LocalDate birthdate,
 

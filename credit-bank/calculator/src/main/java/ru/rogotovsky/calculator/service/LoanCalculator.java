@@ -62,10 +62,10 @@ public class LoanCalculator {
                     debtPayment,
                     remainingDebt
             ));
-            log.debug("Schedule month {} -> interest: {}, debt: {}, remaining: {}", i, interestPayment, debtPayment, remainingDebt);
         }
 
-        log.info("Built payment schedule: {}", schedule);
+        log.info("Built payment schedule -> size: {}, term: {}, totalPayment: {}, remainingDebt: {}",
+                schedule.size(), term, monthlyPayment, remainingDebt);
         return schedule;
     }
 

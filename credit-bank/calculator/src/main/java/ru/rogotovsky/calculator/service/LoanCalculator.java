@@ -16,9 +16,7 @@ public class LoanCalculator {
 
     public BigDecimal calculateMonthlyPayment(BigDecimal amount, BigDecimal rate, Integer term) {
 
-        BigDecimal monthlyRate = rate
-                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(12), 10, RoundingMode.HALF_UP);
+        BigDecimal monthlyRate = toMonthlyRate(rate);
 
         BigDecimal pow = monthlyRate.add(BigDecimal.ONE).pow(term);
         BigDecimal numerator = amount.multiply(monthlyRate).multiply(pow);
@@ -40,9 +38,7 @@ public class LoanCalculator {
 
         List<PaymentScheduleElementDto> schedule = new ArrayList<>();
 
-        BigDecimal monthlyRate = rate
-                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)
-                .divide(BigDecimal.valueOf(12), 10, RoundingMode.HALF_UP);
+        BigDecimal monthlyRate = toMonthlyRate(rate);
 
         BigDecimal remainingDebt = amount;
 
@@ -87,4 +83,11 @@ public class LoanCalculator {
         log.info("PSK: {}", psk);
         return psk;
     }
+
+    private BigDecimal toMonthlyRate(BigDecimal yearlyRate) {
+        return yearlyRate
+                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)
+                .divide(BigDecimal.valueOf(12), 10, RoundingMode.HALF_UP);
+    }
 }
+

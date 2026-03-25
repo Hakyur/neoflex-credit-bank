@@ -41,6 +41,18 @@ public class DealService {
         return offers;
     }
 
+    @Transactional
+    public void applyLoanOffer(LoanOfferDto requestDto) {
+        Statement statement = statementRepository.findById(requestDto.getStatementId()).orElseThrow(
+                () -> new RuntimeException("Statement not found")
+        );
+
+        statement.setAppliedOffer(requestDto);
+        updateStatus(statement, ApplicationStatus.APPROVED, ChangeType.MANUAL);
+
+        statementRepository.save(statement);
+    }
+
     private Statement createStatement(Client client) {
         LocalDateTime time = LocalDateTime.now();
         Statement statement = new Statement();
@@ -63,5 +75,12 @@ public class DealService {
                 })
                 .body(new ParameterizedTypeReference<List<LoanOfferDto>>() {
                 });
+    }
+
+    private void updateStatus(Statement statement, ApplicationStatus status, ChangeType changeType) {
+        statement.setStatus(status);
+        statement.getStatusHistory().add(
+                new StatusHistory(status, LocalDateTime.now(), changeType)
+        );
     }
 }

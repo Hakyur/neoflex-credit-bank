@@ -23,7 +23,7 @@ public class DealController {
 
     @PostMapping("/offer/select")
     public void selectOffer(@RequestBody LoanOfferDto requestDto) {
-
+        dealService.applyLoanOffer(requestDto);
     }
 
     @PostMapping("/calculate/{statementId}")

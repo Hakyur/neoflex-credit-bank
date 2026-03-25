@@ -1,0 +1,32 @@
+package ru.rogotovsky.deal.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import ru.rogotovsky.deal.dto.FinishRegistrationRequestDto;
+import ru.rogotovsky.deal.dto.LoanOfferDto;
+import ru.rogotovsky.deal.dto.LoanStatementRequestDto;
+import ru.rogotovsky.deal.service.DealService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/deal")
+@RequiredArgsConstructor
+public class DealController {
+
+    private final DealService dealService;
+
+    @PostMapping("/statement")
+    public List<LoanOfferDto> getLoanOffers(@RequestBody LoanStatementRequestDto requestDto) {
+        return dealService.getLoanOffers(requestDto);
+    }
+
+    @PostMapping("/offer/select")
+    public void selectOffer(@RequestBody LoanOfferDto requestDto) {
+
+    }
+
+    @PostMapping("/calculate/{statementId}")
+    public void calculate(@RequestBody FinishRegistrationRequestDto requestDto, @PathVariable int statementId) {
+    }
+}

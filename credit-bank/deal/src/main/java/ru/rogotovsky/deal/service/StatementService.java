@@ -1,6 +1,7 @@
 package ru.rogotovsky.deal.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +12,6 @@ import ru.rogotovsky.deal.enums.ApplicationStatus;
 import ru.rogotovsky.deal.enums.ChangeType;
 import ru.rogotovsky.deal.exception.StatementNotFoundException;
 import ru.rogotovsky.deal.repository.StatementRepository;
-import ru.rogotovsky.deal.util.StringForExceptionsUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import static ru.rogotovsky.deal.util.StringForExceptionsUtils.STATEMENT_NOT_FOUND;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StatementService {
@@ -47,10 +48,13 @@ public class StatementService {
     }
 
     public Statement save(Statement statement) {
+        log.debug("Saving statement id={}", statement.getStatementId());
         return repository.save(statement);
     }
 
     public Statement updateStatus(Statement statement, ApplicationStatus status, ChangeType changeType) {
+        log.debug("Updating statement status to {}", status);
+
         statement.setStatus(status);
         statement.getStatusHistory().add(
                 new StatusHistory(status, LocalDateTime.now(), changeType)
@@ -60,6 +64,7 @@ public class StatementService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateStatusToDenied(Statement statement) {
+        log.debug("Updating statement status to CC_DENIED id={}", statement.getStatementId());
         statement.setStatus(ApplicationStatus.CC_DENIED);
         statement.getStatusHistory().add(
                 new StatusHistory(ApplicationStatus.CC_DENIED, LocalDateTime.now(), ChangeType.MANUAL)

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.rogotovsky.deal.dto.ErrorResponse;
@@ -18,6 +19,7 @@ import ru.rogotovsky.deal.service.DealService;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/deal")
 @RequiredArgsConstructor
@@ -53,7 +55,12 @@ public class DealController {
     })
     @PostMapping("/statement")
     public ResponseEntity<List<LoanOfferDto>> getLoanOffers(@RequestBody LoanStatementRequestDto requestDto) {
-        return ResponseEntity.ok(dealService.getLoanOffers(requestDto));
+        log.info("Received /statement request: {}", requestDto);
+
+        List<LoanOfferDto> response = dealService.getLoanOffers(requestDto);
+
+        log.info("Returning loan offers: {}", response);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(
@@ -85,7 +92,11 @@ public class DealController {
     })
     @PostMapping("/offer/select")
     public void selectOffer(@RequestBody LoanOfferDto requestDto) {
+        log.info("Received /offer/select request: {}", requestDto);
+
         dealService.applyLoanOffer(requestDto);
+
+        log.info("POST /offer/select completed");
     }
 
     @Operation(
@@ -118,6 +129,10 @@ public class DealController {
     })
     @PostMapping("/calculate/{statementId}")
     public void calculateCredit(@RequestBody FinishRegistrationRequestDto requestDto, @PathVariable String statementId) {
+        log.info("Received /calculate/{statementId}: {}", requestDto);
+
         dealService.calculateCredit(requestDto, UUID.fromString(statementId));
+
+        log.info("POST /deal/calculate/{} completed", statementId);
     }
 }

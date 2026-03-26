@@ -2,6 +2,7 @@ package ru.rogotovsky.deal.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
@@ -20,6 +21,7 @@ import java.util.List;
 import static ru.rogotovsky.deal.util.CalculatorClientConstants.*;
 import static ru.rogotovsky.deal.util.StringForExceptionsUtils.*;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CalculatorClient {
@@ -29,6 +31,8 @@ public class CalculatorClient {
     private final StatementService statementService;
 
     public List<LoanOfferDto> getOffers(LoanStatementRequestDto requestDto) {
+        log.debug("Sending request to calculator /offers");
+
         try {
             return restClient.post()
                     .uri(OFFERS_URI)
@@ -39,13 +43,17 @@ public class CalculatorClient {
                     })
                     .body(new ParameterizedTypeReference<>() {});
         } catch (CalculatorServiceException e) {
+            log.error("Calculator service unavailable", e);
             throw e;
         } catch (Exception e) {
+            log.error("Calculator service unavailable", e);
             throw new CalculatorServiceException(SERVICE_UNAVAILABLE);
         }
     }
 
     public CreditDto calculate(ScoringDataDto requestDto, Statement statement) {
+        log.debug("Sending request to calculator /calc for statementId={}", statement.getStatementId());
+
         try {
             return restClient.post()
                     .uri(CALC_URI)
@@ -60,8 +68,10 @@ public class CalculatorClient {
                     })
                     .body(CreditDto.class);
         } catch (ScoringException | CalculatorServiceException e) {
+            log.warn("Scoring failed for statementId={}", statement.getStatementId());
             throw e;
         } catch (Exception e) {
+            log.error("Calculator service unavailable", e);
             throw new CalculatorServiceException(SERVICE_UNAVAILABLE);
         }
     }

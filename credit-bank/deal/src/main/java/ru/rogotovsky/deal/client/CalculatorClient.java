@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import ru.rogotovsky.deal.dto.*;
 import ru.rogotovsky.deal.entity.Statement;
-import ru.rogotovsky.deal.enums.ApplicationStatus;
-import ru.rogotovsky.deal.enums.ChangeType;
 import ru.rogotovsky.deal.exception.CalculatorServiceException;
 import ru.rogotovsky.deal.exception.ScoringException;
 import ru.rogotovsky.deal.service.StatementService;

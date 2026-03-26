@@ -11,10 +11,13 @@ import ru.rogotovsky.deal.enums.ApplicationStatus;
 import ru.rogotovsky.deal.enums.ChangeType;
 import ru.rogotovsky.deal.exception.StatementNotFoundException;
 import ru.rogotovsky.deal.repository.StatementRepository;
+import ru.rogotovsky.deal.util.StringForExceptionsUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import static ru.rogotovsky.deal.util.StringForExceptionsUtils.STATEMENT_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +27,7 @@ public class StatementService {
 
     public Statement getById(UUID id) {
         return repository.findById(id).orElseThrow(
-                () -> new StatementNotFoundException("Statement with id = %s not found".formatted(id))
+                () -> new StatementNotFoundException(STATEMENT_NOT_FOUND.formatted(id))
         );
     }
 

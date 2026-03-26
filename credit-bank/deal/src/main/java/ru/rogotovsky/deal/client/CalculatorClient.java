@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.rogotovsky.deal.util.CalculatorClientConstants.*;
+import static ru.rogotovsky.deal.util.StringForExceptionsUtils.*;
+
 @Component
 @RequiredArgsConstructor
 public class CalculatorClient {
@@ -28,7 +31,7 @@ public class CalculatorClient {
     public List<LoanOfferDto> getOffers(LoanStatementRequestDto requestDto) {
         try {
             return restClient.post()
-                    .uri("/offers")
+                    .uri(OFFERS_URI)
                     .body(requestDto)
                     .retrieve()
                     .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
@@ -38,17 +41,17 @@ public class CalculatorClient {
         } catch (CalculatorServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new CalculatorServiceException("Calculator service unavailable");
+            throw new CalculatorServiceException(SERVICE_UNAVAILABLE);
         }
     }
 
     public CreditDto calculate(ScoringDataDto requestDto, Statement statement) {
         try {
             return restClient.post()
-                    .uri("/calc")
+                    .uri(CALC_URI)
                     .body(requestDto)
                     .retrieve()
-                    .onStatus(status -> status.value() == 400, (req, res) -> {
+                    .onStatus(status -> status.value() == BAD_REQUEST, (req, res) -> {
                         statementService.updateStatusToDenied(statement);
                         throw new ScoringException(readErrorResponse(res));
                     })
@@ -59,7 +62,7 @@ public class CalculatorClient {
         } catch (ScoringException | CalculatorServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new CalculatorServiceException("Calculator service unavailable");
+            throw new CalculatorServiceException(SERVICE_UNAVAILABLE);
         }
     }
 
@@ -68,8 +71,8 @@ public class CalculatorClient {
             return objectMapper.readValue(res.getBody(), ErrorResponse.class);
         } catch (IOException e) {
             return new ErrorResponse(
-                    "Cannot parse error response",
-                    "PARSE_ERROR",
+                    PARSE_ERROR_MESSAGE,
+                    PARSE_ERROR,
                     LocalDateTime.now()
             );
         }

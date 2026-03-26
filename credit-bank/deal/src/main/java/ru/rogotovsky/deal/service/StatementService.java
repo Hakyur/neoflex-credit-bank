@@ -2,11 +2,14 @@ package ru.rogotovsky.deal.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.rogotovsky.deal.entity.Client;
 import ru.rogotovsky.deal.entity.Statement;
 import ru.rogotovsky.deal.entity.StatusHistory;
 import ru.rogotovsky.deal.enums.ApplicationStatus;
 import ru.rogotovsky.deal.enums.ChangeType;
+import ru.rogotovsky.deal.exception.StatementNotFoundException;
 import ru.rogotovsky.deal.repository.StatementRepository;
 
 import java.time.LocalDateTime;
@@ -21,7 +24,7 @@ public class StatementService {
 
     public Statement getById(UUID id) {
         return repository.findById(id).orElseThrow(
-                () -> new RuntimeException("Statement not found")
+                () -> new StatementNotFoundException("Statement with id = %s not found".formatted(id))
         );
     }
 
@@ -50,5 +53,14 @@ public class StatementService {
                 new StatusHistory(status, LocalDateTime.now(), changeType)
         );
         return statement;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateStatusToDenied(Statement statement) {
+        statement.setStatus(ApplicationStatus.CC_DENIED);
+        statement.getStatusHistory().add(
+                new StatusHistory(ApplicationStatus.CC_DENIED, LocalDateTime.now(), ChangeType.MANUAL)
+        );
+        repository.save(statement);
     }
 }

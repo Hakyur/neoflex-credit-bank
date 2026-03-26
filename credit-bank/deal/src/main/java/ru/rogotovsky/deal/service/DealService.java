@@ -1,8 +1,8 @@
 package ru.rogotovsky.deal.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.rogotovsky.deal.client.CalculatorClient;
 import ru.rogotovsky.deal.dto.*;
 import ru.rogotovsky.deal.entity.Client;
@@ -59,7 +59,7 @@ public class DealService {
 
         ScoringDataDto scoringDto = scoringMapper.toScoringDataDto(statement, requestDto);
 
-        CreditDto creditDto = calculatorClient.calculate(scoringDto);
+        CreditDto creditDto = calculatorClient.calculate(scoringDto, statement);
 
         Credit credit = creditRepository.save(creditMapper.toEntity(creditDto));
 

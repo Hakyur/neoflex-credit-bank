@@ -8,7 +8,7 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfig {
 
     @Bean
-    public RestClient calculatorClient() {
+    public RestClient restClient() {
         return RestClient.builder()
                 .baseUrl("http://localhost:8081/calculator")
                 .build();

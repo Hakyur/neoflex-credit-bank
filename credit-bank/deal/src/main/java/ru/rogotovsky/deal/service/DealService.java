@@ -2,39 +2,41 @@ package ru.rogotovsky.deal.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-import ru.rogotovsky.deal.dto.LoanOfferDto;
-import ru.rogotovsky.deal.dto.LoanStatementRequestDto;
+import ru.rogotovsky.deal.client.CalculatorClient;
+import ru.rogotovsky.deal.dto.*;
 import ru.rogotovsky.deal.entity.Client;
+import ru.rogotovsky.deal.entity.Credit;
 import ru.rogotovsky.deal.entity.Statement;
-import ru.rogotovsky.deal.entity.StatusHistory;
 import ru.rogotovsky.deal.enums.ApplicationStatus;
 import ru.rogotovsky.deal.enums.ChangeType;
 import ru.rogotovsky.deal.mapper.ClientMapper;
+import ru.rogotovsky.deal.mapper.CreditMapper;
+import ru.rogotovsky.deal.mapper.ScoringMapper;
 import ru.rogotovsky.deal.repository.ClientRepository;
-import ru.rogotovsky.deal.repository.StatementRepository;
+import ru.rogotovsky.deal.repository.CreditRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class DealService {
 
-    private final StatementRepository statementRepository;
+    private final CalculatorClient calculatorClient;
+    private final StatementService statementService;
     private final ClientRepository clientRepository;
+    private final CreditRepository creditRepository;
+    private final ScoringMapper scoringMapper;
+    private final CreditMapper creditMapper;
     private final ClientMapper clientMapper;
-    private final RestClient restClient;
 
     @Transactional
     public List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto requestDto) {
         Client client = clientRepository.save(clientMapper.toClient(requestDto));
-        Statement statement = statementRepository.save(createStatement(client));
+        Statement statement = statementService.save(statementService.createStatement(client));
 
-        List<LoanOfferDto> offers = getOffersFromCalculator(requestDto);
+        List<LoanOfferDto> offers = calculatorClient.getOffers(requestDto);
 
         offers.forEach(offer -> offer.setStatementId(statement.getStatementId()));
 
@@ -43,44 +45,27 @@ public class DealService {
 
     @Transactional
     public void applyLoanOffer(LoanOfferDto requestDto) {
-        Statement statement = statementRepository.findById(requestDto.getStatementId()).orElseThrow(
-                () -> new RuntimeException("Statement not found")
-        );
+        Statement statement = statementService.getById(requestDto.getStatementId());
 
         statement.setAppliedOffer(requestDto);
-        updateStatus(statement, ApplicationStatus.APPROVED, ChangeType.MANUAL);
+        statement = statementService.updateStatus(statement, ApplicationStatus.APPROVED, ChangeType.MANUAL);
 
-        statementRepository.save(statement);
+        statementService.save(statement);
     }
 
-    private Statement createStatement(Client client) {
-        LocalDateTime time = LocalDateTime.now();
-        Statement statement = new Statement();
-        statement.setClient(client);
-        statement.setStatus(ApplicationStatus.PREAPPROVAL);
-        statement.setCreationDate(time);
-        statement.setStatusHistory(List.of(
-                new StatusHistory(ApplicationStatus.PREAPPROVAL, time, ChangeType.AUTOMATIC)
-        ));
-        return statement;
-    }
+    @Transactional
+    public void calculateCredit(FinishRegistrationRequestDto requestDto, UUID statementId) {
+        Statement statement = statementService.getById(statementId);
 
-    private List<LoanOfferDto> getOffersFromCalculator(LoanStatementRequestDto requestDto) {
-        return restClient.post()
-                .uri("/offers")
-                .body(requestDto)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, (req, res) -> {
-                    throw new RuntimeException("Calculator returned error: " + res.getStatusCode());
-                })
-                .body(new ParameterizedTypeReference<List<LoanOfferDto>>() {
-                });
-    }
+        ScoringDataDto scoringDto = scoringMapper.toScoringDataDto(statement, requestDto);
 
-    private void updateStatus(Statement statement, ApplicationStatus status, ChangeType changeType) {
-        statement.setStatus(status);
-        statement.getStatusHistory().add(
-                new StatusHistory(status, LocalDateTime.now(), changeType)
-        );
+        CreditDto creditDto = calculatorClient.calculate(scoringDto);
+
+        Credit credit = creditRepository.save(creditMapper.toEntity(creditDto));
+
+        statement.setCredit(credit);
+        statement = statementService.updateStatus(statement, ApplicationStatus.CC_APPROVED, ChangeType.MANUAL);
+
+        statementService.save(statement);
     }
 }

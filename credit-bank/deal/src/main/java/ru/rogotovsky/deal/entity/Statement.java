@@ -9,7 +9,6 @@ import org.hibernate.type.SqlTypes;
 import ru.rogotovsky.deal.dto.LoanOfferDto;
 import ru.rogotovsky.deal.enums.ApplicationStatus;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;

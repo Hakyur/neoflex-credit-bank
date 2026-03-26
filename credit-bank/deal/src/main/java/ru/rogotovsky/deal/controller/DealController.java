@@ -8,6 +8,7 @@ import ru.rogotovsky.deal.dto.LoanStatementRequestDto;
 import ru.rogotovsky.deal.service.DealService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/deal")
@@ -27,6 +28,7 @@ public class DealController {
     }
 
     @PostMapping("/calculate/{statementId}")
-    public void calculate(@RequestBody FinishRegistrationRequestDto requestDto, @PathVariable int statementId) {
+    public void calculateCredit(@RequestBody FinishRegistrationRequestDto requestDto, @PathVariable String statementId) {
+        dealService.calculateCredit(requestDto, UUID.fromString(statementId));
     }
 }

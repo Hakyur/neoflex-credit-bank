@@ -11,10 +11,8 @@ import ru.rogotovsky.deal.entity.Credit;
 import ru.rogotovsky.deal.entity.Statement;
 import ru.rogotovsky.deal.enums.ApplicationStatus;
 import ru.rogotovsky.deal.enums.ChangeType;
-import ru.rogotovsky.deal.mapper.ClientMapper;
 import ru.rogotovsky.deal.mapper.CreditMapper;
 import ru.rogotovsky.deal.mapper.ScoringMapper;
-import ru.rogotovsky.deal.repository.ClientRepository;
 import ru.rogotovsky.deal.repository.CreditRepository;
 
 import java.util.List;
@@ -27,16 +25,15 @@ public class DealService {
 
     private final CalculatorClient calculatorClient;
     private final StatementService statementService;
-    private final ClientRepository clientRepository;
+    private final ClientService clientService;
     private final CreditRepository creditRepository;
     private final ScoringMapper scoringMapper;
     private final CreditMapper creditMapper;
-    private final ClientMapper clientMapper;
 
     @Transactional
     public List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto requestDto) {
         log.debug("Saving client information");
-        Client client = clientRepository.save(clientMapper.toClient(requestDto));
+        Client client = clientService.saveClient(clientService.createClient(requestDto));
 
         log.debug("Creating statement for client id={}", client.getClientId());
         Statement statement = statementService.save(statementService.createStatement(client));
@@ -67,6 +64,10 @@ public class DealService {
     public void calculateCredit(FinishRegistrationRequestDto requestDto, UUID statementId) {
         log.debug("Fetching statement id={}", statementId);
         Statement statement = statementService.getById(statementId);
+
+        log.debug("Update client information");
+        Client client = clientService.saveClient(
+                clientService.updateClientInformation(statement.getClient(), requestDto));
 
         log.debug("Mapping scoring data");
         ScoringDataDto scoringDto = scoringMapper.toScoringDataDto(statement, requestDto);

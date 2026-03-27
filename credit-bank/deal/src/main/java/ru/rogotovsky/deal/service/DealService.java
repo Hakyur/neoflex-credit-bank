@@ -56,7 +56,7 @@ public class DealService {
         Statement statement = statementService.getById(requestDto.getStatementId());
 
         statement.setAppliedOffer(requestDto);
-        statement = statementService.updateStatus(statement, ApplicationStatus.APPROVED, ChangeType.MANUAL);
+        statement = statementService.updateStatus(statement, ApplicationStatus.APPROVED, ChangeType.AUTOMATIC);
         log.debug("Statement status has been changed to {}", statement.getStatus());
 
         statementService.save(statement);
@@ -78,7 +78,7 @@ public class DealService {
         Credit credit = creditRepository.save(creditMapper.toEntity(creditDto));
 
         statement.setCredit(credit);
-        statement = statementService.updateStatus(statement, ApplicationStatus.CC_APPROVED, ChangeType.MANUAL);
+        statement = statementService.updateStatus(statement, ApplicationStatus.CC_APPROVED, ChangeType.AUTOMATIC);
         log.debug("Statement status has been changed to {}", statement.getStatus());
 
         statementService.save(statement);

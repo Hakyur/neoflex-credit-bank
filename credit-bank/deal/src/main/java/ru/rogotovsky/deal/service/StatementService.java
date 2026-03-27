@@ -67,7 +67,7 @@ public class StatementService {
         log.debug("Updating statement status to CC_DENIED id={}", statement.getStatementId());
         statement.setStatus(ApplicationStatus.CC_DENIED);
         statement.getStatusHistory().add(
-                new StatusHistory(ApplicationStatus.CC_DENIED, LocalDateTime.now(), ChangeType.MANUAL)
+                new StatusHistory(ApplicationStatus.CC_DENIED, LocalDateTime.now(), ChangeType.AUTOMATIC)
         );
         repository.save(statement);
     }

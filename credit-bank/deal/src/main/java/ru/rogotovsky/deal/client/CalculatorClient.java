@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.rogotovsky.deal.util.CalculatorClientConstants.*;
-import static ru.rogotovsky.deal.util.StringForExceptionsUtils.*;
+import static ru.rogotovsky.deal.util.ExceptionMessages.*;
 
 @Slf4j
 @Component

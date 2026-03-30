@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static ru.rogotovsky.deal.util.StringForExceptionsUtils.STATEMENT_NOT_FOUND;
+import static ru.rogotovsky.deal.util.ExceptionMessages.STATEMENT_NOT_FOUND;
 
 @Slf4j
 @Service

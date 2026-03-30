@@ -1,11 +1,9 @@
 package ru.rogotovsky.deal;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.rogotovsky.deal.dto.EmploymentDto;
 import ru.rogotovsky.deal.dto.FinishRegistrationRequestDto;

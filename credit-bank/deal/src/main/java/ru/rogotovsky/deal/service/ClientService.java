@@ -1,6 +1,7 @@
 package ru.rogotovsky.deal.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.rogotovsky.deal.dto.FinishRegistrationRequestDto;
 import ru.rogotovsky.deal.dto.LoanStatementRequestDto;
@@ -10,6 +11,7 @@ import ru.rogotovsky.deal.mapper.ClientMapper;
 import ru.rogotovsky.deal.mapper.EmploymentMapper;
 import ru.rogotovsky.deal.repository.ClientRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ClientService {
@@ -19,14 +21,25 @@ public class ClientService {
     private final EmploymentMapper employmentMapper;
 
     public Client createClient(LoanStatementRequestDto requestDto) {
-        return clientMapper.toClient(requestDto);
+        log.info("Creating client from LoanStatementRequestDto: {}", requestDto);
+
+        Client client = clientMapper.toClient(requestDto);
+
+        log.info("Client successfully created: {}", client);
+        return client;
     }
 
     public Client saveClient(Client client) {
-        return clientRepository.save(client);
+        log.info("Saving client with id: {}", client.getClientId());
+
+        Client savedClient = clientRepository.save(client);
+
+        log.info("Client saved successfully with id: {}", savedClient.getClientId());
+        return savedClient;
     }
 
     public Client updateClientInformation(Client client, FinishRegistrationRequestDto requestDto) {
+        log.info("Updating client information for clientId: {}", client.getClientId());
         Passport passport = client.getPassport();
         passport.setIssueDate(requestDto.passportIssueDate());
         passport.setIssueBranch(requestDto.passportIssueBranch());
@@ -38,6 +51,7 @@ public class ClientService {
         client.setAccountNumber(requestDto.accountNumber());
         client.setEmployment(employmentMapper.toEmployment(requestDto.employment()));
 
+        log.debug("Updated client data: {}", client);
         return client;
     }
 }

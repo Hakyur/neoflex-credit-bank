@@ -50,7 +50,7 @@ public class CreditServiceTests {
                 EmploymentStatus.EMPLOYED,
                 "123",
                 BigDecimal.valueOf(50000),
-                Position.OTHER,
+                Position.WORKER,
                 24,
                 6
         );
@@ -67,7 +67,7 @@ public class CreditServiceTests {
                 "123456",
                 LocalDate.now().minusYears(5),
                 "UFMS",
-                MaritalStatus.UNMARRIED,
+                MaritalStatus.SINGLE,
                 0,
                 employment,
                 "123456",

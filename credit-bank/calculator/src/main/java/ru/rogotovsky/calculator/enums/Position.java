@@ -8,7 +8,8 @@ import java.math.BigDecimal;
 public enum Position {
     MID_MANAGER(BigDecimal.valueOf(-2)),
     TOP_MANAGER(BigDecimal.valueOf(-3)),
-    OTHER(BigDecimal.ZERO);
+    WORKER(BigDecimal.ZERO),
+    OWNER(BigDecimal.ZERO);
 
     private final BigDecimal rateAdjustment;
 

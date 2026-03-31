@@ -130,7 +130,7 @@ public class DealServiceTest {
 
         when(scoringMapper.toScoringDataDto(statement, requestDto)).thenReturn(scoringDto);
         when(calculatorClient.calculate(scoringDto, statement)).thenReturn(creditDto);
-        when(creditMapper.toEntity(creditDto)).thenReturn(credit);
+        when(creditMapper.toCredit(creditDto)).thenReturn(credit);
         when(creditRepository.save(credit)).thenReturn(credit);
 
         when(statementService.updateStatus(statement, ApplicationStatus.CC_APPROVED, ChangeType.AUTOMATIC))

@@ -76,7 +76,7 @@ public class DealService {
         CreditDto creditDto = calculatorClient.calculate(scoringDto, statement);
 
         log.debug("Saving credit entity");
-        Credit credit = creditRepository.save(creditMapper.toEntity(creditDto));
+        Credit credit = creditRepository.save(creditMapper.toCredit(creditDto));
 
         statement.setCredit(credit);
         statement = statementService.updateStatus(statement, ApplicationStatus.CC_APPROVED, ChangeType.AUTOMATIC);

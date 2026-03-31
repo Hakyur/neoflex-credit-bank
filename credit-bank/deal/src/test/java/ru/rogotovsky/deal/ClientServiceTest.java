@@ -114,11 +114,11 @@ public class ClientServiceTest {
                 passport, employment, dto.accountNumber()
         );
 
-        when(employmentMapper.toEntity(employmentDto)).thenReturn(employment);
+        when(employmentMapper.toEmployment(employmentDto)).thenReturn(employment);
 
         Client actual = clientService.updateClientInformation(client, dto);
 
         assertEquals(expected, actual);
-        verify(employmentMapper).toEntity(employmentDto);
+        verify(employmentMapper).toEmployment(employmentDto);
     }
 }

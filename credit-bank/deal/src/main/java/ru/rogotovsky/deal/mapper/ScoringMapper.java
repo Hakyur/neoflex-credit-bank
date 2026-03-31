@@ -1,32 +1,23 @@
 package ru.rogotovsky.deal.mapper;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.rogotovsky.deal.dto.FinishRegistrationRequestDto;
-import ru.rogotovsky.deal.dto.LoanOfferDto;
 import ru.rogotovsky.deal.dto.ScoringDataDto;
-import ru.rogotovsky.deal.entity.Client;
-import ru.rogotovsky.deal.entity.Passport;
 import ru.rogotovsky.deal.entity.Statement;
 
-@Component
-public class ScoringMapper {
+@Mapper(componentModel = "spring")
+public interface ScoringMapper {
 
-    public ScoringDataDto toScoringDataDto(Statement statement, FinishRegistrationRequestDto requestDto) {
-
-        Client client = statement.getClient();
-        Passport passport = client.getPassport();
-        LoanOfferDto offer = statement.getAppliedOffer();
-
-        return new ScoringDataDto(
-                offer.getRequestedAmount(), offer.getTerm(),
-                client.getFirstName(), client.getLastName(),
-                client.getMiddleName(), requestDto.gender(),
-                client.getBirthDate(), passport.getSeries(),
-                passport.getNumber(), requestDto.passportIssueDate(),
-                requestDto.passportIssueBranch(), requestDto.maritalStatus(),
-                requestDto.dependentAmount(), requestDto.employment(),
-                requestDto.accountNumber(), offer.getIsInsuranceEnabled(),
-                offer.getIsSalaryClient()
-        );
-    }
+    @Mapping(target = "amount", source = "statement.appliedOffer.requestedAmount")
+    @Mapping(target = "term", source = "statement.appliedOffer.term")
+    @Mapping(target = "employment", source = "requestDto.employment")
+    @Mapping(target = ".", source = "statement.client")
+    @Mapping(target = ".", source = "requestDto")
+    @Mapping(target = "birthdate", source = "statement.client.birthDate")
+    @Mapping(target = "passportSeries", source = "statement.client.passport.series")
+    @Mapping(target = "passportNumber", source = "statement.client.passport.number")
+    @Mapping(target = "isInsuranceEnabled", source = "statement.appliedOffer.isInsuranceEnabled")
+    @Mapping(target = "isSalaryClient", source = "statement.appliedOffer.isSalaryClient")
+    ScoringDataDto toScoringDataDto(Statement statement, FinishRegistrationRequestDto requestDto);
 }

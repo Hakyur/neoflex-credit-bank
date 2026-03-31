@@ -1,21 +1,15 @@
 package ru.rogotovsky.deal.mapper;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.rogotovsky.deal.dto.EmploymentDto;
 import ru.rogotovsky.deal.entity.Employment;
 
-@Component
-public class EmploymentMapper {
+@Mapper(componentModel = "spring")
+public interface EmploymentMapper {
 
-    public Employment toEntity(EmploymentDto dto) {
-        return new Employment(
-                null,
-                dto.employmentStatus(),
-                dto.employerINN(),
-                dto.salary(),
-                dto.position(),
-                dto.workExperienceTotal(),
-                dto.workExperienceCurrent()
-        );
-    }
+    @Mapping(target = "employmentId", ignore = true)
+    @Mapping(target = "status", source = "employmentStatus")
+    @Mapping(target = "employerInn", source = "employerINN")
+    Employment toEmployment(EmploymentDto dto);
 }

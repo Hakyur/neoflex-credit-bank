@@ -36,7 +36,7 @@ public class ClientService {
         client.setMaritalStatus(requestDto.maritalStatus());
         client.setDependentAmount(requestDto.dependentAmount());
         client.setAccountNumber(requestDto.accountNumber());
-        client.setEmployment(employmentMapper.toEntity(requestDto.employment()));
+        client.setEmployment(employmentMapper.toEmployment(requestDto.employment()));
 
         return client;
     }

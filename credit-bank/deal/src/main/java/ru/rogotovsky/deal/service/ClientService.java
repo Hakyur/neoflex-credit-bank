@@ -40,16 +40,8 @@ public class ClientService {
 
     public Client updateClientInformation(Client client, FinishRegistrationRequestDto requestDto) {
         log.info("Updating client information for clientId: {}", client.getClientId());
-        Passport passport = client.getPassport();
-        passport.setIssueDate(requestDto.passportIssueDate());
-        passport.setIssueBranch(requestDto.passportIssueBranch());
 
-        client.setPassport(passport);
-        client.setGender(requestDto.gender());
-        client.setMaritalStatus(requestDto.maritalStatus());
-        client.setDependentAmount(requestDto.dependentAmount());
-        client.setAccountNumber(requestDto.accountNumber());
-        client.setEmployment(employmentMapper.toEmployment(requestDto.employment()));
+        clientMapper.updateClientFromDto(requestDto, client);
 
         log.debug("Updated client data: {}", client);
         return client;

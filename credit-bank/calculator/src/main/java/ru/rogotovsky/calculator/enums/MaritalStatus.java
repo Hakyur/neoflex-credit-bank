@@ -6,9 +6,10 @@ import java.math.BigDecimal;
 
 @Schema(description = "Marital status of the client")
 public enum MaritalStatus {
-    UNMARRIED(BigDecimal.ZERO),
+    SINGLE(BigDecimal.ZERO),
     MARRIED(BigDecimal.valueOf(-3)),
-    DIVORCED(BigDecimal.ONE),;
+    DIVORCED(BigDecimal.ONE),
+    WIDOW_WIDOWER(BigDecimal.ZERO);
 
     private final BigDecimal rateAdjustment;
 

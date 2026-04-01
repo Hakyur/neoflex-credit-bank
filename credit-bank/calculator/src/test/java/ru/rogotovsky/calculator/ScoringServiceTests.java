@@ -41,7 +41,7 @@ public class ScoringServiceTests {
                 EmploymentStatus.EMPLOYED,
                 "1234567890",
                 BigDecimal.valueOf(50000),
-                Position.OTHER,
+                Position.WORKER,
                 24,
                 6
         );
@@ -58,7 +58,7 @@ public class ScoringServiceTests {
                 "123456",
                 LocalDate.now().plusYears(4),
                 "UFMS",
-                MaritalStatus.UNMARRIED,
+                MaritalStatus.SINGLE,
                 0,
                 employment,
                 "123456789",
@@ -73,7 +73,7 @@ public class ScoringServiceTests {
                 EmploymentStatus.UNEMPLOYED,
                 "123",
                 BigDecimal.valueOf(50000),
-                Position.OTHER,
+                Position.WORKER,
                 24,
                 6
         );
@@ -111,7 +111,7 @@ public class ScoringServiceTests {
                 EmploymentStatus.EMPLOYED,
                 "123",
                 BigDecimal.valueOf(50000),
-                Position.OTHER,
+                Position.WORKER,
                 24,
                 6
         );
@@ -149,7 +149,7 @@ public class ScoringServiceTests {
                 EmploymentStatus.BUSINESS_OWNER,
                 "123",
                 BigDecimal.valueOf(50000),
-                Position.OTHER,
+                Position.WORKER,
                 24,
                 6
         );
@@ -187,7 +187,7 @@ public class ScoringServiceTests {
                 EmploymentStatus.SELF_EMPLOYED,
                 "123",
                 BigDecimal.valueOf(50000),
-                Position.OTHER,
+                Position.WORKER,
                 24,
                 6
         );
@@ -301,7 +301,7 @@ public class ScoringServiceTests {
                 EmploymentStatus.EMPLOYED,
                 "123",
                 BigDecimal.valueOf(50000),
-                Position.OTHER,
+                Position.WORKER,
                 24,
                 6
         );
@@ -328,7 +328,7 @@ public class ScoringServiceTests {
                 dto.isSalaryClient()
         );
 
-        BigDecimal expected = Position.OTHER.applyRate(BASE_RATE);
+        BigDecimal expected = Position.WORKER.applyRate(BASE_RATE);
         BigDecimal actual = scoringService.applyPositionScoring(valid, BASE_RATE);
         assertEquals(expected, actual);
     }
@@ -349,7 +349,7 @@ public class ScoringServiceTests {
                 dto.passportNumber(),
                 dto.passportIssueDate(),
                 dto.passportIssueBranch(),
-                MaritalStatus.UNMARRIED,
+                MaritalStatus.SINGLE,
                 dto.dependentAmount(),
                 dto.employment(),
                 dto.accountNumber(),
@@ -357,7 +357,7 @@ public class ScoringServiceTests {
                 dto.isSalaryClient()
         );
 
-        BigDecimal expected = MaritalStatus.UNMARRIED.applyRate(BASE_RATE);
+        BigDecimal expected = MaritalStatus.SINGLE.applyRate(BASE_RATE);
         BigDecimal actual = scoringService.applyMaritalStatusScoring(valid, BASE_RATE);
         assertEquals(expected, actual);
     }
@@ -728,7 +728,7 @@ public class ScoringServiceTests {
                 EmploymentStatus.UNEMPLOYED,
                 "123",
                 BigDecimal.valueOf(50000),
-                Position.OTHER,
+                Position.WORKER,
                 24,
                 6
         );
@@ -793,7 +793,7 @@ public class ScoringServiceTests {
                 EmploymentStatus.EMPLOYED,
                 "123",
                 BigDecimal.valueOf(50000),
-                Position.OTHER,
+                Position.WORKER,
                 17,
                 6
         );
@@ -830,7 +830,7 @@ public class ScoringServiceTests {
                 EmploymentStatus.EMPLOYED,
                 "123",
                 BigDecimal.valueOf(50000),
-                Position.OTHER,
+                Position.WORKER,
                 20,
                 2
         );
@@ -897,7 +897,7 @@ public class ScoringServiceTests {
                 EmploymentStatus.UNEMPLOYED,
                 "123",
                 BigDecimal.valueOf(50000),
-                Position.OTHER,
+                Position.WORKER,
                 24,
                 6
         );

@@ -2,6 +2,7 @@ package ru.rogotovsky.statement.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DealClient {
@@ -25,20 +27,27 @@ public class DealClient {
     private final ObjectMapper objectMapper;
 
     public List<LoanOfferDto> requestLoanOffers(LoanStatementRequestDto requestDto) {
+        log.debug("Sending POST /deal/statement request: {}", requestDto);
+
         try {
-            return restClient.post()
+            List<LoanOfferDto> response = restClient.post()
                     .uri("/statement")
                     .body(requestDto)
                     .retrieve()
                     .onStatus(HttpStatusCode::isError, (req, res) -> {
+                        log.error("Deal service returned error status: {}", res.getStatusCode());
                         throw new DealServiceException(
                                 HttpStatus.valueOf(res.getStatusCode().value()),
                                 readErrorResponse(res));
                     })
                     .body(new ParameterizedTypeReference<>() {});
+            log.debug("Received response from deal service: {}", response);
+            return response;
         } catch (DealServiceException e) {
+            log.error("Deal service exception: status={}, error={}", e.getStatus(), e.getError());
             throw e;
         } catch (Exception e) {
+            log.error("Deal service unavailable", e);
             throw new DealServiceException(
                     HttpStatus.SERVICE_UNAVAILABLE,
                     "Deal service unavailable");
@@ -46,20 +55,26 @@ public class DealClient {
     }
 
     public void requestOfferSelection(LoanOfferDto requestDto) {
+        log.debug("Sending POST /deal/offer/select request: {}", requestDto);
+
         try {
             restClient.post()
                     .uri("/offer/select")
                     .body(requestDto)
                     .retrieve()
                     .onStatus(HttpStatusCode::isError, (req, res) -> {
+                        log.error("Deal service returned error status: {}", res.getStatusCode());
                         throw new DealServiceException(
                                 HttpStatus.valueOf(res.getStatusCode().value()),
                                 readErrorResponse(res));
                     })
                     .toBodilessEntity();
+            log.debug("Deal service successfully processed offer selection");
         } catch (DealServiceException e) {
+            log.error("Deal service exception: status={}, error={}", e.getStatus(), e.getError());
             throw e;
         } catch (Exception e) {
+            log.error("Deal service unavailable", e);
             throw new DealServiceException(
                     HttpStatus.SERVICE_UNAVAILABLE,
                     "Deal service unavailable");

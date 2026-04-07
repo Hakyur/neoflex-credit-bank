@@ -1,4 +1,4 @@
-package ru.rogotovsky.calculator.validator;
+package ru.rogotovsky.statement.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

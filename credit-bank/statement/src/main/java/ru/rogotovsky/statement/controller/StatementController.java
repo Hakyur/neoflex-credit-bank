@@ -26,7 +26,8 @@ public class StatementController {
     }
 
     @PostMapping("/offer")
-    public ResponseEntity<Void> applyOffer(@RequestBody LoanOfferDto requestDto) {
-        return null;
+    public ResponseEntity<Void> selectOffer(@RequestBody LoanOfferDto requestDto) {
+        statementService.selectLoanOffer(requestDto);
+        return ResponseEntity.noContent().build();
     }
 }

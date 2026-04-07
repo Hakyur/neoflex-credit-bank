@@ -34,8 +34,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DealServiceException.class)
     public ResponseEntity<ErrorResponse> handleDealServiceException(DealServiceException e) {
-        if (e.getError() != null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getError());
+        if (e.getError() != null && e.getStatus() != null) {
+            return ResponseEntity.status(e.getStatus()).body(e.getError());
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(
                     e.getMessage(),

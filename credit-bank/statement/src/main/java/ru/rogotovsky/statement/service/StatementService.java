@@ -17,4 +17,8 @@ public class StatementService {
     public List<LoanOfferDto> processLoanApplication(LoanStatementRequestDto requestDto) {
         return dealClient.requestLoanOffers(requestDto);
     }
+
+    public void selectLoanOffer(LoanOfferDto requestDto) {
+        dealClient.requestOfferSelection(requestDto);
+    }
 }

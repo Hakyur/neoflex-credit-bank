@@ -3,6 +3,7 @@ package ru.rogotovsky.statement.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
@@ -29,14 +30,39 @@ public class DealClient {
                     .uri("/statement")
                     .body(requestDto)
                     .retrieve()
-                    .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
-                        throw new DealServiceException(readErrorResponse(res));
+                    .onStatus(HttpStatusCode::isError, (req, res) -> {
+                        throw new DealServiceException(
+                                HttpStatus.valueOf(res.getStatusCode().value()),
+                                readErrorResponse(res));
                     })
                     .body(new ParameterizedTypeReference<>() {});
         } catch (DealServiceException e) {
             throw e;
         } catch (Exception e) {
-            throw new DealServiceException("Deal service unavailable");
+            throw new DealServiceException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    "Deal service unavailable");
+        }
+    }
+
+    public void requestOfferSelection(LoanOfferDto requestDto) {
+        try {
+            restClient.post()
+                    .uri("/offer/select")
+                    .body(requestDto)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::isError, (req, res) -> {
+                        throw new DealServiceException(
+                                HttpStatus.valueOf(res.getStatusCode().value()),
+                                readErrorResponse(res));
+                    })
+                    .toBodilessEntity();
+        } catch (DealServiceException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DealServiceException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    "Deal service unavailable");
         }
     }
 

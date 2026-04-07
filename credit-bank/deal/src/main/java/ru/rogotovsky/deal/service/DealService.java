@@ -50,7 +50,7 @@ public class DealService {
     @Transactional
     public void applyLoanOffer(LoanOfferDto requestDto) {
         log.debug("Fetching statement id={}", requestDto.getStatementId());
-        Statement statement = statementService.getById(requestDto.getStatementId());
+        Statement statement = statementService.getByIdForUpdate(requestDto.getStatementId());
 
         statement.setAppliedOffer(requestDto);
         statement = statementService.updateStatus(statement, ApplicationStatus.APPROVED, ChangeType.AUTOMATIC);

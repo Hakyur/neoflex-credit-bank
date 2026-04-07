@@ -21,8 +21,8 @@ public class StatementController {
     private final StatementService statementService;
 
     @PostMapping
-    public ResponseEntity<List<LoanOfferDto>> getLoanOffers(@Valid @RequestBody LoanStatementRequestDto requestDto) {
-        return ResponseEntity.ok(statementService.getLoanOffers(requestDto));
+    public ResponseEntity<List<LoanOfferDto>> applyForLoan(@Valid @RequestBody LoanStatementRequestDto requestDto) {
+        return ResponseEntity.ok(statementService.processLoanApplication(requestDto));
     }
 
     @PostMapping("/offer")

@@ -14,7 +14,7 @@ public class StatementService {
 
     private final DealClient dealClient;
 
-    public List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto requestDto) {
-        return dealClient.getLoanOffers(requestDto);
+    public List<LoanOfferDto> processLoanApplication(LoanStatementRequestDto requestDto) {
+        return dealClient.requestLoanOffers(requestDto);
     }
 }

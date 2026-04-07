@@ -23,7 +23,7 @@ public class DealClient {
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
 
-    public List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto requestDto) {
+    public List<LoanOfferDto> requestLoanOffers(LoanStatementRequestDto requestDto) {
         try {
             return restClient.post()
                     .uri("/statement")

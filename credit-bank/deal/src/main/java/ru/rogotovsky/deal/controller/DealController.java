@@ -54,10 +54,10 @@ public class DealController {
             )
     })
     @PostMapping("/statement")
-    public ResponseEntity<List<LoanOfferDto>> getLoanOffers(@RequestBody LoanStatementRequestDto requestDto) {
+    public ResponseEntity<List<LoanOfferDto>> createLoanStatement(@RequestBody LoanStatementRequestDto requestDto) {
         log.info("Received /statement request: {}", requestDto);
 
-        List<LoanOfferDto> response = dealService.getLoanOffers(requestDto);
+        List<LoanOfferDto> response = dealService.createLoanStatement(requestDto);
 
         log.info("Returning loan offers: {}", response);
         return ResponseEntity.ok(response);

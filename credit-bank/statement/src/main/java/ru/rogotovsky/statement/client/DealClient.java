@@ -9,12 +9,10 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import ru.rogotovsky.statement.exception.DealServiceException;
 import ru.rogotovsky.statement.dto.ErrorResponse;
 import ru.rogotovsky.statement.dto.LoanOfferDto;
 import ru.rogotovsky.statement.dto.LoanStatementRequestDto;
-import ru.rogotovsky.statement.util.DealClientConstants;
-import ru.rogotovsky.statement.util.ExceptionMessages;
+import ru.rogotovsky.statement.exception.DealServiceException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

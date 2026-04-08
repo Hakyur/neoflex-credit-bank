@@ -15,5 +15,5 @@ public interface StatementRepository extends JpaRepository<Statement, UUID> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from Statement s where s.statementId = :id")
-    Optional<Statement> findByIdForUpdate(UUID statementId);
+    Optional<Statement> findByIdForUpdate(UUID id);
 }

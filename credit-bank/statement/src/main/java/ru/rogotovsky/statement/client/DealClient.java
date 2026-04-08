@@ -13,10 +13,16 @@ import ru.rogotovsky.statement.exception.DealServiceException;
 import ru.rogotovsky.statement.dto.ErrorResponse;
 import ru.rogotovsky.statement.dto.LoanOfferDto;
 import ru.rogotovsky.statement.dto.LoanStatementRequestDto;
+import ru.rogotovsky.statement.util.DealClientConstants;
+import ru.rogotovsky.statement.util.ExceptionMessages;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static ru.rogotovsky.statement.util.DealClientConstants.SELECT_OFFER_URI;
+import static ru.rogotovsky.statement.util.DealClientConstants.STATEMENT_URI;
+import static ru.rogotovsky.statement.util.ExceptionMessages.*;
 
 @Slf4j
 @Component
@@ -31,7 +37,7 @@ public class DealClient {
 
         try {
             List<LoanOfferDto> response = restClient.post()
-                    .uri("/statement")
+                    .uri(STATEMENT_URI)
                     .body(requestDto)
                     .retrieve()
                     .onStatus(HttpStatusCode::isError, (req, res) -> {
@@ -59,7 +65,7 @@ public class DealClient {
 
         try {
             restClient.post()
-                    .uri("/offer/select")
+                    .uri(SELECT_OFFER_URI)
                     .body(requestDto)
                     .retrieve()
                     .onStatus(HttpStatusCode::isError, (req, res) -> {
@@ -77,7 +83,7 @@ public class DealClient {
             log.error("Deal service unavailable", e);
             throw new DealServiceException(
                     HttpStatus.SERVICE_UNAVAILABLE,
-                    "Deal service unavailable");
+                    SERVICE_UNAVAILABLE);
         }
     }
 
@@ -86,8 +92,8 @@ public class DealClient {
             return objectMapper.readValue(res.getBody(), ErrorResponse.class);
         } catch (IOException e) {
             return new ErrorResponse(
-                    "Cannot parse error response",
-                    "PARSE_ERROR",
+                    PARSE_ERROR_MESSAGE,
+                    PARSE_ERROR,
                     LocalDateTime.now()
             );
         }

@@ -31,7 +31,7 @@ public class DealService {
     private final CreditMapper creditMapper;
 
     @Transactional
-    public List<LoanOfferDto> getLoanOffers(LoanStatementRequestDto requestDto) {
+    public List<LoanOfferDto> createLoanStatement(LoanStatementRequestDto requestDto) {
         log.debug("Saving client information");
         Client client = clientService.saveClient(clientService.createClient(requestDto));
 
@@ -39,7 +39,7 @@ public class DealService {
         Statement statement = statementService.save(statementService.createStatement(client));
 
         log.debug("Calling calculator for loan offers");
-        List<LoanOfferDto> offers = calculatorClient.getOffers(requestDto);
+        List<LoanOfferDto> offers = calculatorClient.requestLoanOffers(requestDto);
 
         offers.forEach(offer -> offer.setStatementId(statement.getStatementId()));
 
@@ -50,7 +50,7 @@ public class DealService {
     @Transactional
     public void applyLoanOffer(LoanOfferDto requestDto) {
         log.debug("Fetching statement id={}", requestDto.getStatementId());
-        Statement statement = statementService.getById(requestDto.getStatementId());
+        Statement statement = statementService.getByIdForUpdate(requestDto.getStatementId());
 
         statement.setAppliedOffer(requestDto);
         statement = statementService.updateStatus(statement, ApplicationStatus.APPROVED, ChangeType.AUTOMATIC);

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="004-create-credit" author="Dmitry Rogotovsky">
+        <createTable tableName="credit">
+            <column name="credit_id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="amount" type="NUMERIC(38,2)"/>
+            <column name="term" type="INT"/>
+            <column name="monthly_payment" type="NUMERIC(38,2)"/>
+            <column name="rate" type="NUMERIC(38,2)"/>
+            <column name="psk" type="NUMERIC(38,2)"/>
+            <column name="payment_schedule" type="JSONB"/>
+            <column name="insurance_enabled" type="BOOLEAN"/>
+            <column name="salary_client" type="BOOLEAN"/>
+            <column name="credit_status" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

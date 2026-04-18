@@ -58,7 +58,7 @@ public class DealServiceTest {
     }
 
     @Test
-    void getLoanOffersSuccess() {
+    void createLoanStatementSuccess() {
         LoanStatementRequestDto requestDto = mock(LoanStatementRequestDto.class);
 
         Client client = new Client();
@@ -75,14 +75,14 @@ public class DealServiceTest {
         when(clientService.saveClient(client)).thenReturn(client);
         when(statementService.createStatement(client)).thenReturn(statement);
         when(statementService.save(statement)).thenReturn(statement);
-        when(calculatorClient.getOffers(requestDto)).thenReturn(offers);
+        when(calculatorClient.requestLoanOffers(requestDto)).thenReturn(offers);
 
-        List<LoanOfferDto> result = dealService.getLoanOffers(requestDto);
+        List<LoanOfferDto> result = dealService.createLoanStatement(requestDto);
 
         assertThat(result).hasSize(4);
         assertThat(result).allMatch(o -> statementId.equals(o.getStatementId()));
 
-        verify(calculatorClient).getOffers(requestDto);
+        verify(calculatorClient).requestLoanOffers(requestDto);
         verify(clientService).createClient(requestDto);
         verify(clientService).saveClient(client);
         verify(statementService).save(statement);

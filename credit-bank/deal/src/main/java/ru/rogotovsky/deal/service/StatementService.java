@@ -32,6 +32,12 @@ public class StatementService {
         );
     }
 
+    public Statement getByIdForUpdate(UUID id) {
+        return repository.findByIdForUpdate(id).orElseThrow(
+                () -> new StatementNotFoundException(STATEMENT_NOT_FOUND.formatted(id))
+        );
+    }
+
     public Statement createStatement(Client client) {
         LocalDateTime time = LocalDateTime.now();
 

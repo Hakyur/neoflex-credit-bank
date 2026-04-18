@@ -30,7 +30,7 @@ public class CalculatorClient {
     private final ObjectMapper objectMapper;
     private final StatementService statementService;
 
-    public List<LoanOfferDto> getOffers(LoanStatementRequestDto requestDto) {
+    public List<LoanOfferDto> requestLoanOffers(LoanStatementRequestDto requestDto) {
         log.debug("Sending request to calculator /offers");
 
         try {

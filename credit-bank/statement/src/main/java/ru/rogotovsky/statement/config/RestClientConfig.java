@@ -1,4 +1,4 @@
-package ru.rogotovsky.deal.config;
+package ru.rogotovsky.statement.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +11,7 @@ public class RestClientConfig {
     @Bean
     public RestClient restClient() {
         return RestClient.builder()
-                .baseUrl("http://localhost:8081/calculator")
+                .baseUrl("http://localhost:8082/deal")
                 .build();
     }
 

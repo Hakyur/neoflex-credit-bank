@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.rogotovsky.deal.dto.LoanOfferDto;
+import ru.rogotovsky.deal.entity.Client;
 import ru.rogotovsky.deal.entity.Statement;
 import ru.rogotovsky.deal.repository.StatementRepository;
 import ru.rogotovsky.deal.service.DealService;
@@ -35,7 +36,14 @@ public class DealServiceLockTest {
     private Statement createStatement() {
         Statement statement = new Statement();
         statement.setStatusHistory(new ArrayList<>());
+        statement.setClient(createClient());
         return statement;
+    }
+
+    private Client createClient() {
+        Client client = new Client();
+        client.setEmail("test@gmail.com");
+        return client;
     }
 
     private LoanOfferDto createOffer(UUID id) {

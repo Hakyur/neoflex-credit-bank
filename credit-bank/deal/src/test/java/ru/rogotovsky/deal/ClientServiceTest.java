@@ -25,8 +25,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ClientServiceTest {
@@ -102,23 +101,11 @@ public class ClientServiceTest {
                 "Ministry of Internal Affairs of Russia in the Voronezh region", employmentDto,
                 "1253551");
 
-        Employment employment = new Employment(
-                UUID.randomUUID(), employmentDto.employmentStatus(), employmentDto.employerINN(),
-                employmentDto.salary(), employmentDto.position(), employmentDto.workExperienceTotal(),
-                employmentDto.workExperienceCurrent());
-
-        Client expected = new Client(
-                client.getClientId(), client.getLastName(), client.getFirstName(),
-                client.getMiddleName(), client.getBirthDate(), client.getEmail(),
-                dto.gender(), dto.maritalStatus(), dto.dependentAmount(),
-                passport, employment, dto.accountNumber()
-        );
-
-        when(employmentMapper.toEmployment(employmentDto)).thenReturn(employment);
+        doNothing().when(clientMapper).updateClientFromDto(dto, client);
 
         Client actual = clientService.updateClientInformation(client, dto);
 
-        assertEquals(expected, actual);
-        verify(employmentMapper).toEmployment(employmentDto);
+        assertEquals(client, actual);
+        verify(clientMapper).updateClientFromDto(dto, client);
     }
 }

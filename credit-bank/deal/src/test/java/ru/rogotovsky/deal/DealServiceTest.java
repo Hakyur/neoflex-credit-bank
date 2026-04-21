@@ -97,7 +97,7 @@ public class DealServiceTest {
 
         Statement statement = new Statement();
 
-        when(statementService.getById(statementId)).thenReturn(statement);
+        when(statementService.getByIdForUpdate(statementId)).thenReturn(statement);
         when(statementService.updateStatus(statement, ApplicationStatus.APPROVED, ChangeType.AUTOMATIC))
                 .thenReturn(statement);
 
@@ -105,7 +105,7 @@ public class DealServiceTest {
 
         assertThat(statement.getAppliedOffer()).isEqualTo(offer);
 
-        verify(statementService).getById(statementId);
+        verify(statementService).getByIdForUpdate(statementId);
         verify(statementService).save(statement);
     }
 

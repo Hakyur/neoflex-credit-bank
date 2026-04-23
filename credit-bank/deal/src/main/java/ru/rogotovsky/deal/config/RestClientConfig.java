@@ -14,9 +14,4 @@ public class RestClientConfig {
                 .baseUrl("http://localhost:8081/calculator")
                 .build();
     }
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
 }

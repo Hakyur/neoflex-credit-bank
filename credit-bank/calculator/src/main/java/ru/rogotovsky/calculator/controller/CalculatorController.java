@@ -58,7 +58,7 @@ public class CalculatorController {
             )
     })
     @PostMapping("/offers")
-    public ResponseEntity<List<LoanOfferDto>> calculateLoanOffers(@Valid @RequestBody LoanStatementRequestDto requestDto) {
+    public ResponseEntity<List<LoanOfferDto>> calculateLoanOffers(@RequestBody LoanStatementRequestDto requestDto) {
         log.info("Received /offers request: {}", requestDto);
 
         List<LoanOfferDto> offers = loanOfferService.calculateLoanOffers(requestDto);

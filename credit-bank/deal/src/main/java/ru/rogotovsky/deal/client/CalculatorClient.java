@@ -60,7 +60,7 @@ public class CalculatorClient {
                     .body(requestDto)
                     .retrieve()
                     .onStatus(status -> status.value() == BAD_REQUEST, (req, res) -> {
-                        statementService.updateStatusToDenied(statement);
+                        statementService.updateStatusToDenied(statement.getStatementId());
                         throw new ScoringException(readErrorResponse(res));
                     })
                     .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {

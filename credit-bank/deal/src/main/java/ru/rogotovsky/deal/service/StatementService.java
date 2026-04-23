@@ -69,7 +69,8 @@ public class StatementService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateStatusToDenied(Statement statement) {
+    public void updateStatusToDenied(UUID statementId) {
+        Statement statement = getById(statementId);
         log.debug("Updating statement status to CC_DENIED id={}", statement.getStatementId());
         statement.setStatus(ApplicationStatus.CC_DENIED);
         statement.getStatusHistory().add(

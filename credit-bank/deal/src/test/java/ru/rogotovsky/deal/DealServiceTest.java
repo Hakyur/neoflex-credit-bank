@@ -53,7 +53,7 @@ public class DealServiceTest {
         dealService = new DealService(
                 calculatorClient, statementService,
                 clientService, creditRepository,
-                scoringMapper, creditMapper
+                scoringMapper, creditMapper, null, null
         );
     }
 

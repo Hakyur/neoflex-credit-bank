@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: dossier
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: drogotovsky@gmail.com
+    password: deom tspi ybhn wzsk
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: dossier-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: ru.rogotovsky.dossier.dto.EmailMessage
+        spring.json.trusted.packages: "ru.rogotovsky.*"
+server:
+  port: 8084

@@ -29,6 +29,8 @@ public class DealService {
     private final CreditRepository creditRepository;
     private final ScoringMapper scoringMapper;
     private final CreditMapper creditMapper;
+    private final EmailEventProducer emailEventProducer;
+    private final EmailMessageFactory emailMessageFactory;
 
     @Transactional
     public List<LoanOfferDto> createLoanStatement(LoanStatementRequestDto requestDto) {
@@ -58,6 +60,14 @@ public class DealService {
 
         statementService.save(statement);
         log.info("Loan offer applied for statementId={}", statement.getStatementId());
+
+        EmailMessage emailMessage = emailMessageFactory.buildFinishRegistrationEmail(statement);
+
+        log.info("Prepared email message for statementId={}: {}",
+                statement.getStatementId(),
+                emailMessage);
+
+        emailEventProducer.sendFinishRegistration(emailMessage);
     }
 
     @Transactional

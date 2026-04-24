@@ -42,4 +42,20 @@ public class EmailMessageFactory {
         );
     }
 
+    public EmailMessage buildSendDocumentsEmail(Statement statement) {
+        String text = """
+            Ваши документы готовы.
+
+            Для подписания перейдите по ссылке:
+            http://localhost:8082/deal/document/%s/sign
+            """.formatted(statement.getStatementId());
+
+        return new EmailMessage(
+                statement.getClient().getEmail(),
+                Theme.SEND_DOCUMENTS,
+                statement.getStatementId(),
+                text
+        );
+    }
+
 }

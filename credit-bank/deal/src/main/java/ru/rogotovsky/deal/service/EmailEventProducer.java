@@ -29,6 +29,10 @@ public class EmailEventProducer {
         sendMessage(STATEMENT_DENIED, emailMessageFactory.buildStatementDeniedEmail(statement));
     }
 
+    public void sendDocumentsEmail(Statement statement) {
+        sendMessage(SEND_DOCUMENTS, emailMessageFactory.buildSendDocumentsEmail(statement));
+    }
+
 
     private void sendMessage(String topic, EmailMessage message) {
         log.info("Sending message to topic {}: {}", topic, message);

@@ -18,7 +18,7 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(emailMessage.address());
-        message.setSubject("Credit Bank");
+        message.setSubject(emailMessage.theme().getSubject());
         message.setText(emailMessage.text());
 
         mailSender.send(message);

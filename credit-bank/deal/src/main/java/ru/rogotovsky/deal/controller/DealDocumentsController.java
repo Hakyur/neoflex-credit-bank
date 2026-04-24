@@ -32,4 +32,10 @@ public class DealDocumentsController {
     }
 
 
+    @PostMapping("/{statementId}/code")
+    public ResponseEntity<Void> verifySesCode(@PathVariable UUID statementId, @RequestParam String code) {
+        log.info("Received /document/{statementId}/code: {}", statementId);
+        dealDocumentsService.confirmSesCode(statementId, code);
+        return ResponseEntity.noContent().build();
+    }
 }

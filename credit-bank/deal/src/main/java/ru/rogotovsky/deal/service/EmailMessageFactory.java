@@ -79,4 +79,12 @@ public class EmailMessageFactory {
         );
     }
 
+    public EmailMessage buildCreditIssuedEmail(Statement statement) {
+        return new EmailMessage(
+                statement.getClient().getEmail(),
+                Theme.CREDIT_ISSUED,
+                statement.getStatementId(),
+                "Кредит успешно выдан. Поздравляем!"
+        );
+    }
 }

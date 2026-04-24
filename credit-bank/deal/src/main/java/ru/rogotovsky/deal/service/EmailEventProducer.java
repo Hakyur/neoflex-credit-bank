@@ -37,6 +37,9 @@ public class EmailEventProducer {
         sendMessage(SEND_SES, emailMessageFactory.buildSendSesEmail(statement));
     }
 
+    public void sendCreditIssuedEmail(Statement statement) {
+        sendMessage(CREDIT_ISSUED, emailMessageFactory.buildCreditIssuedEmail(statement));
+    }
 
     private void sendMessage(String topic, EmailMessage message) {
         log.info("Sending message to topic {}: {}", topic, message);

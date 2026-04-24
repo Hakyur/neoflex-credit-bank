@@ -52,6 +52,26 @@ public class DealDocumentsService {
         emailEventProducer.sendSesEmail(statement);
     }
 
+    @Transactional
+    public void confirmSesCode(UUID statementId, String code) {
+        Statement statement = statementService.getById(statementId);
+
+        if (!code.equals(statement.getSesCode())) {
+            throw new IllegalStateException();
+        }
+
+        statement = statementService.updateStatus(statement, ApplicationStatus.DOCUMENT_SIGNED, ChangeType.AUTOMATIC);
+        statement.setSignDate(LocalDateTime.now());
+        statement = statementService.save(statement);
+
+        Credit credit = statement.getCredit();
+        credit.setCreditStatus(CreditStatus.ISSUED);
+
+        statement = statementService.updateStatus(statement, ApplicationStatus.CREDIT_ISSUED, ChangeType.AUTOMATIC);
+        statement = statementService.save(statement);
+
+        emailEventProducer.sendCreditIssuedEmail(statement);
+    }
 
     private String generateSesCode() {
         SecureRandom random = new SecureRandom();

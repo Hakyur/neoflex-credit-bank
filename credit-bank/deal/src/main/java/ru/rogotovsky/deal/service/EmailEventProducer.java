@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.rogotovsky.deal.dto.EmailMessage;
-import ru.rogotovsky.deal.util.KafkaTopics;
+import ru.rogotovsky.deal.entity.Statement;
 
-import static ru.rogotovsky.deal.util.KafkaTopics.FINISH_REGISTRATION;
+import static ru.rogotovsky.deal.util.KafkaTopics.*;
 
 @Service
 @RequiredArgsConstructor
@@ -15,9 +15,15 @@ import static ru.rogotovsky.deal.util.KafkaTopics.FINISH_REGISTRATION;
 public class EmailEventProducer {
 
     private final KafkaTemplate<String, EmailMessage> kafkaTemplate;
+    private final EmailMessageFactory emailMessageFactory;
 
-    public void sendFinishRegistration(EmailMessage message) {
-        log.info("Sending message to topic finish-registration: {}", message);
-        kafkaTemplate.send(FINISH_REGISTRATION, message);
+    public void sendFinishRegistration(Statement statement) {
+        sendMessage(FINISH_REGISTRATION, emailMessageFactory.buildFinishRegistrationEmail(statement));
+    }
+
+
+    private void sendMessage(String topic, EmailMessage message) {
+        log.info("Sending message to topic {}: {}", topic, message);
+        kafkaTemplate.send(topic, message);
     }
 }

@@ -30,7 +30,6 @@ public class DealService {
     private final ScoringMapper scoringMapper;
     private final CreditMapper creditMapper;
     private final EmailEventProducer emailEventProducer;
-    private final EmailMessageFactory emailMessageFactory;
 
     @Transactional
     public List<LoanOfferDto> createLoanStatement(LoanStatementRequestDto requestDto) {
@@ -58,16 +57,11 @@ public class DealService {
         statement = statementService.updateStatus(statement, ApplicationStatus.APPROVED, ChangeType.AUTOMATIC);
         log.debug("Statement status has been changed to {}", statement.getStatus());
 
-        statementService.save(statement);
+        statement = statementService.save(statement);
+
+        emailEventProducer.sendFinishRegistration(statement);
+
         log.info("Loan offer applied for statementId={}", statement.getStatementId());
-
-        EmailMessage emailMessage = emailMessageFactory.buildFinishRegistrationEmail(statement);
-
-        log.info("Prepared email message for statementId={}: {}",
-                statement.getStatementId(),
-                emailMessage);
-
-        emailEventProducer.sendFinishRegistration(emailMessage);
     }
 
     @Transactional

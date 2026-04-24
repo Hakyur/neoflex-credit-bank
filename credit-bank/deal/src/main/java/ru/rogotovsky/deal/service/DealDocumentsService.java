@@ -9,6 +9,7 @@ import ru.rogotovsky.deal.entity.Statement;
 import ru.rogotovsky.deal.enums.ApplicationStatus;
 import ru.rogotovsky.deal.enums.ChangeType;
 import ru.rogotovsky.deal.enums.CreditStatus;
+import ru.rogotovsky.deal.exception.InvalidSesCodeException;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -57,7 +58,7 @@ public class DealDocumentsService {
         Statement statement = statementService.getById(statementId);
 
         if (!code.equals(statement.getSesCode())) {
-            throw new IllegalStateException();
+            throw new InvalidSesCodeException("Invalid SES code");
         }
 
         statement = statementService.updateStatus(statement, ApplicationStatus.DOCUMENT_SIGNED, ChangeType.AUTOMATIC);

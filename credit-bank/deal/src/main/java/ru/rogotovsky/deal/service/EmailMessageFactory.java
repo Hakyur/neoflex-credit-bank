@@ -58,4 +58,25 @@ public class EmailMessageFactory {
         );
     }
 
+    public EmailMessage buildSendSesEmail(Statement statement) {
+        String text = """
+            Вы подтвердили согласие с условиями.
+
+            Ваш код подтверждения: %s
+
+            Для завершения отправьте код:
+            http://localhost:8082/deal/document/%s/code
+            """.formatted(
+                statement.getSesCode(),
+                statement.getStatementId()
+        );
+
+        return new EmailMessage(
+                statement.getClient().getEmail(),
+                Theme.SEND_SES,
+                statement.getStatementId(),
+                text
+        );
+    }
+
 }

@@ -35,4 +35,26 @@ public class DealDocumentsService {
         emailEventProducer.sendDocumentsEmail(statement);
     }
 
+    @Transactional
+    public void processSigningDecision(UUID statementId, Boolean accepted) {
+        Statement statement = statementService.getById(statementId);
+
+        if (!accepted) {
+            statement = statementService.updateStatus(statement, ApplicationStatus.CLIENT_DENIED, ChangeType.AUTOMATIC);
+            statementService.save(statement);
+            return;
+        }
+
+        String sesCode = generateSesCode();
+        statement.setSesCode(sesCode);
+        statement = statementService.save(statement);
+
+        emailEventProducer.sendSesEmail(statement);
+    }
+
+
+    private String generateSesCode() {
+        SecureRandom random = new SecureRandom();
+        return String.format("%06d", random.nextInt(1_000_000));
+    }
 }

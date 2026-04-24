@@ -33,6 +33,10 @@ public class EmailEventProducer {
         sendMessage(SEND_DOCUMENTS, emailMessageFactory.buildSendDocumentsEmail(statement));
     }
 
+    public void sendSesEmail(Statement statement) {
+        sendMessage(SEND_SES, emailMessageFactory.buildSendSesEmail(statement));
+    }
+
 
     private void sendMessage(String topic, EmailMessage message) {
         log.info("Sending message to topic {}: {}", topic, message);

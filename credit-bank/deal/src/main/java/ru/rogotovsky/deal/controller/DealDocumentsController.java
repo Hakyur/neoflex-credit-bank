@@ -24,4 +24,12 @@ public class DealDocumentsController {
     }
 
 
+    @PostMapping("/{statementId}/sign")
+    public ResponseEntity<Void> signDocuments(@PathVariable UUID statementId, @RequestParam Boolean accepted) {
+        log.info("Received /document/{statementId}/sign: {}, accepted={}", statementId, accepted);
+        dealDocumentsService.processSigningDecision(statementId, accepted);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

@@ -87,6 +87,9 @@ public class DealService {
         log.debug("Statement status has been changed to {}", statement.getStatus());
 
         statementService.save(statement);
+
+        emailEventProducer.sendCreateDocuments(statement);
+
         log.info("Credit calculated and saved for statementId={}", statementId);
     }
 }

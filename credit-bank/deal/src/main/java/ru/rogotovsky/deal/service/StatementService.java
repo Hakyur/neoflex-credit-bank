@@ -25,6 +25,7 @@ import static ru.rogotovsky.deal.util.ExceptionMessages.STATEMENT_NOT_FOUND;
 public class StatementService {
 
     private final StatementRepository repository;
+    private final EmailEventProducer emailEventProducer;
 
     public Statement getById(UUID id) {
         return repository.findById(id).orElseThrow(
@@ -76,6 +77,8 @@ public class StatementService {
         statement.getStatusHistory().add(
                 new StatusHistory(ApplicationStatus.CC_DENIED, LocalDateTime.now(), ChangeType.AUTOMATIC)
         );
-        repository.save(statement);
+        statement = repository.save(statement);
+
+        emailEventProducer.sendStatementDenied(statement);
     }
 }

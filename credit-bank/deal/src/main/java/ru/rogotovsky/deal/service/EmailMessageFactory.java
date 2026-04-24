@@ -16,4 +16,30 @@ public class EmailMessageFactory {
                 "Ваша заявка предварительно одобрена, завершите оформление"
         );
     }
+
+    public EmailMessage buildCreateDocumentsEmail(Statement statement) {
+        String text = """
+            Кредит одобрен.
+            
+            Для продолжения сформируйте документы:
+            http://localhost:8082/deal/document/%s/send
+            """.formatted(statement.getStatementId());
+
+        return new EmailMessage(
+                statement.getClient().getEmail(),
+                Theme.CREATE_DOCUMENTS,
+                statement.getStatementId(),
+                text
+        );
+    }
+
+    public EmailMessage buildStatementDeniedEmail(Statement statement) {
+        return new EmailMessage(
+                statement.getClient().getEmail(),
+                Theme.STATEMENT_DENIED,
+                statement.getStatementId(),
+                "Ваша заявка на кредит отклонена"
+        );
+    }
+
 }

@@ -27,3 +27,5 @@ spring:
       acks: all
 server:
   port: 8082
+calculator:
+  base-url: http://localhost:8081/calculator

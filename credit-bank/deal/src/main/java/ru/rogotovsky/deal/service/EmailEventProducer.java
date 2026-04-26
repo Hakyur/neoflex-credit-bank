@@ -6,6 +6,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.rogotovsky.deal.dto.EmailMessage;
 import ru.rogotovsky.deal.entity.Statement;
+import ru.rogotovsky.deal.exception.KafkaMessageSendException;
 
 import static ru.rogotovsky.deal.util.KafkaTopics.*;
 
@@ -42,7 +43,14 @@ public class EmailEventProducer {
     }
 
     private void sendMessage(String topic, EmailMessage message) {
-        log.info("Sending message to topic {}: {}", topic, message);
-        kafkaTemplate.send(topic, message);
+        String key = message.statementId().toString();
+
+        try {
+            kafkaTemplate.send(topic, key, message).get();
+            log.info("Message sent to topic={}, key={}", topic, key);
+        } catch (Exception ex) {
+            log.error("Failed to send message to topic={}, key={}", topic, key, ex);
+            throw new KafkaMessageSendException("Failed to send Kafka message");
+        }
     }
 }

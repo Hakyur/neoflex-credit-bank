@@ -19,7 +19,11 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false
-      retries: 3
+        enable.idempotence: true
+        delivery.timeout.ms: 5000
+        request.timeout.ms: 3000
+        max.block.ms: 5000
+        retries: 3
       acks: all
 server:
   port: 8082

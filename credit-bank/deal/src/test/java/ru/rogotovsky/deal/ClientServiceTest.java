@@ -9,14 +9,12 @@ import ru.rogotovsky.deal.dto.EmploymentDto;
 import ru.rogotovsky.deal.dto.FinishRegistrationRequestDto;
 import ru.rogotovsky.deal.dto.LoanStatementRequestDto;
 import ru.rogotovsky.deal.entity.Client;
-import ru.rogotovsky.deal.entity.Employment;
 import ru.rogotovsky.deal.entity.Passport;
 import ru.rogotovsky.deal.enums.EmploymentPosition;
 import ru.rogotovsky.deal.enums.EmploymentStatus;
 import ru.rogotovsky.deal.enums.Gender;
 import ru.rogotovsky.deal.enums.MaritalStatus;
 import ru.rogotovsky.deal.mapper.ClientMapper;
-import ru.rogotovsky.deal.mapper.EmploymentMapper;
 import ru.rogotovsky.deal.repository.ClientRepository;
 import ru.rogotovsky.deal.service.ClientService;
 
@@ -25,7 +23,9 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ClientServiceTest {
@@ -36,14 +36,11 @@ public class ClientServiceTest {
     @Mock
     private ClientMapper clientMapper;
 
-    @Mock
-    private EmploymentMapper employmentMapper;
-
     private ClientService clientService;
 
     @BeforeEach
     public void setUp() {
-        clientService = new ClientService(clientRepository, clientMapper, employmentMapper);
+        clientService = new ClientService(clientRepository, clientMapper);
     }
 
     @Test

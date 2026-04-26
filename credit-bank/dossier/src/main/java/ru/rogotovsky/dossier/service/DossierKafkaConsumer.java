@@ -6,7 +6,12 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import ru.rogotovsky.dossier.dto.EmailMessage;
 
-import static ru.rogotovsky.dossier.util.KafkaTopics.*;
+import static ru.rogotovsky.dossier.util.KafkaTopics.CREATE_DOCUMENTS;
+import static ru.rogotovsky.dossier.util.KafkaTopics.CREDIT_ISSUED;
+import static ru.rogotovsky.dossier.util.KafkaTopics.FINISH_REGISTRATION;
+import static ru.rogotovsky.dossier.util.KafkaTopics.SEND_DOCUMENTS;
+import static ru.rogotovsky.dossier.util.KafkaTopics.SEND_SES;
+import static ru.rogotovsky.dossier.util.KafkaTopics.STATEMENT_DENIED;
 
 @Service
 @RequiredArgsConstructor

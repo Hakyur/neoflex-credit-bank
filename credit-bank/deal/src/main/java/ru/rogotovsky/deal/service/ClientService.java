@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.rogotovsky.deal.dto.FinishRegistrationRequestDto;
 import ru.rogotovsky.deal.dto.LoanStatementRequestDto;
 import ru.rogotovsky.deal.entity.Client;
-import ru.rogotovsky.deal.entity.Passport;
 import ru.rogotovsky.deal.mapper.ClientMapper;
 import ru.rogotovsky.deal.mapper.EmploymentMapper;
 import ru.rogotovsky.deal.repository.ClientRepository;

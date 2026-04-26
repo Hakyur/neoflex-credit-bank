@@ -6,7 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.rogotovsky.deal.dto.ErrorResponse;
-import ru.rogotovsky.deal.exception.*;
+import ru.rogotovsky.deal.exception.CalculatorServiceException;
+import ru.rogotovsky.deal.exception.InvalidSesCodeException;
+import ru.rogotovsky.deal.exception.KafkaMessageSendException;
+import ru.rogotovsky.deal.exception.ScoringException;
+import ru.rogotovsky.deal.exception.StatementNotFoundException;
 
 import java.time.LocalDateTime;
 

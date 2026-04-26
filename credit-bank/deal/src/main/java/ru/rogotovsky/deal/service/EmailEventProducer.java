@@ -8,7 +8,12 @@ import ru.rogotovsky.deal.dto.EmailMessage;
 import ru.rogotovsky.deal.entity.Statement;
 import ru.rogotovsky.deal.exception.KafkaMessageSendException;
 
-import static ru.rogotovsky.deal.util.KafkaTopics.*;
+import static ru.rogotovsky.deal.util.KafkaTopics.CREATE_DOCUMENTS;
+import static ru.rogotovsky.deal.util.KafkaTopics.CREDIT_ISSUED;
+import static ru.rogotovsky.deal.util.KafkaTopics.FINISH_REGISTRATION;
+import static ru.rogotovsky.deal.util.KafkaTopics.SEND_DOCUMENTS;
+import static ru.rogotovsky.deal.util.KafkaTopics.SEND_SES;
+import static ru.rogotovsky.deal.util.KafkaTopics.STATEMENT_DENIED;
 
 @Service
 @RequiredArgsConstructor

@@ -15,19 +15,45 @@ public class DossierKafkaConsumer {
 
     private final EmailService emailService;
 
-    @KafkaListener(topics = {
-            FINISH_REGISTRATION,
-            CREATE_DOCUMENTS,
-            STATEMENT_DENIED,
-            SEND_DOCUMENTS,
-            SEND_SES,
-            CREDIT_ISSUED
-    })
-    public void consumeEmailEvent(EmailMessage message) {
+    @KafkaListener(topics = FINISH_REGISTRATION)
+    public void handleFinishRegistration(EmailMessage message) {
+        logReceivedEmail(message);
+        emailService.sendFinishRegistration(message);
+    }
+
+    @KafkaListener(topics = CREATE_DOCUMENTS)
+    public void handleCreateDocuments(EmailMessage message) {
+        logReceivedEmail(message);
+        emailService.sendCreateDocuments(message);
+    }
+
+    @KafkaListener(topics = STATEMENT_DENIED)
+    public void handleStatementDenied(EmailMessage message) {
+        logReceivedEmail(message);
+        emailService.sendStatementDenied(message);
+    }
+
+    @KafkaListener(topics = SEND_DOCUMENTS)
+    public void handleSendDocuments(EmailMessage message) {
+        logReceivedEmail(message);
+        emailService.sendDocuments(message);
+    }
+
+    @KafkaListener(topics = SEND_SES)
+    public void handleSendSessions(EmailMessage message) {
+        logReceivedEmail(message);
+        emailService.sendSes(message);
+    }
+
+    @KafkaListener(topics = CREDIT_ISSUED)
+    public void handleCreditIssued(EmailMessage message) {
+        logReceivedEmail(message);
+        emailService.sendCreditIssued(message);
+    }
+
+    private void logReceivedEmail(EmailMessage message) {
         log.info("Received email event with theme={} for {}",
                 message.theme(),
                 message.address());
-
-        emailService.sendEmail(message);
     }
 }

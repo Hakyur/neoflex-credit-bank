@@ -40,7 +40,7 @@ public class DealDocumentsServiceTest {
     }
 
     @Test
-    void sendDocuments_success() {
+    void sendDocumentsSuccess() {
         UUID id = UUID.randomUUID();
         Statement statement = new Statement();
 
@@ -57,7 +57,7 @@ public class DealDocumentsServiceTest {
     }
 
     @Test
-    void processSigningDecision_accepted() {
+    void processSigningDecisionAccepted() {
         UUID id = UUID.randomUUID();
         Statement statement = new Statement();
 
@@ -73,7 +73,7 @@ public class DealDocumentsServiceTest {
     }
 
     @Test
-    void processSigningDecision_rejected() {
+    void processSigningDecisionRejected() {
         UUID id = UUID.randomUUID();
         Statement statement = new Statement();
 
@@ -90,7 +90,7 @@ public class DealDocumentsServiceTest {
     }
 
     @Test
-    void confirmSesCode_success() {
+    void confirmSesCodeSuccess() {
         UUID id = UUID.randomUUID();
 
         Statement statement = new Statement();
@@ -109,7 +109,7 @@ public class DealDocumentsServiceTest {
     }
 
     @Test
-    void confirmSesCode_invalidCode() {
+    void confirmSesCodeInvalidCode() {
         UUID id = UUID.randomUUID();
 
         Statement statement = new Statement();

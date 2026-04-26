@@ -6,6 +6,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import ru.rogotovsky.dossier.dto.EmailMessage;
+import ru.rogotovsky.dossier.util.EmailTemplates;
 
 @Service
 @RequiredArgsConstructor
@@ -15,47 +16,27 @@ public class EmailService {
     private final JavaMailSender mailSender;
 
     public void sendFinishRegistration(EmailMessage message) {
-        sendEmail(message, "Ваша заявка предварительно одобрена, завершите оформление");
+        sendEmail(message, EmailTemplates.finishRegistration());
     }
 
     public void sendCreateDocuments(EmailMessage message) {
-        sendEmail(message, """
-            Кредит одобрен.
-            
-            Для продолжения сформируйте документы:
-            http://localhost:8082/deal/document/%s/send
-            """.formatted(message.statementId()));
+        sendEmail(message, EmailTemplates.createDocuments(message.statementId()));
     }
 
     public void sendStatementDenied(EmailMessage message) {
-        sendEmail(message, "Ваша заявка на кредит отклонена");
+        sendEmail(message, EmailTemplates.statementDenied());
     }
 
     public void sendDocuments(EmailMessage message) {
-        sendEmail(message, """
-            Ваши документы готовы.
-
-            Для подписания перейдите по ссылке:
-            http://localhost:8082/deal/document/%s/sign
-            """.formatted(message.statementId()));
+        sendEmail(message, EmailTemplates.sendDocuments(message.statementId()));
     }
 
     public void sendSes(EmailMessage message) {
-        sendEmail(message, """
-            Вы подтвердили согласие с условиями.
-
-            Ваш код подтверждения: %s
-
-            Для завершения отправьте код:
-            http://localhost:8082/deal/document/%s/code
-            """.formatted(
-                message.text(),
-                message.statementId()
-        ));
+        sendEmail(message, EmailTemplates.sendSes(message.text(), message.statementId()));
     }
 
     public void sendCreditIssued(EmailMessage message) {
-        sendEmail(message, "Кредит успешно выдан. Поздравляем!");
+        sendEmail(message, EmailTemplates.creditIssued());
     }
 
     private void sendEmail(EmailMessage emailMessage, String text) {
@@ -63,7 +44,7 @@ public class EmailService {
 
         message.setTo(emailMessage.address());
         message.setSubject(emailMessage.theme().getSubject());
-        message.setText(emailMessage.text());
+        message.setText(text);
 
         mailSender.send(message);
 

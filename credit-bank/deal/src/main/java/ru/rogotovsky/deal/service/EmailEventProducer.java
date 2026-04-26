@@ -8,6 +8,7 @@ import ru.rogotovsky.deal.dto.EmailMessage;
 import ru.rogotovsky.deal.entity.Statement;
 import ru.rogotovsky.deal.exception.KafkaMessageSendException;
 
+import static ru.rogotovsky.deal.util.ExceptionMessages.FAILED_SEND_MESSAGE;
 import static ru.rogotovsky.deal.util.KafkaTopics.CREATE_DOCUMENTS;
 import static ru.rogotovsky.deal.util.KafkaTopics.CREDIT_ISSUED;
 import static ru.rogotovsky.deal.util.KafkaTopics.FINISH_REGISTRATION;
@@ -55,7 +56,7 @@ public class EmailEventProducer {
             log.info("Message sent to topic={}, key={}", topic, key);
         } catch (Exception ex) {
             log.error("Failed to send message to topic={}, key={}", topic, key, ex);
-            throw new KafkaMessageSendException("Failed to send Kafka message");
+            throw new KafkaMessageSendException(FAILED_SEND_MESSAGE);
         }
     }
 }

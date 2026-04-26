@@ -50,7 +50,10 @@ public class DealDocumentsController {
     @PostMapping("/{statementId}/send")
     public ResponseEntity<Void> sendDocuments(@PathVariable UUID statementId) {
         log.info("Received /document/{statementId}/send: {}", statementId);
+
         dealDocumentsService.sendDocuments(statementId);
+
+        log.info("POST /document/{}/select completed", statementId);
         return ResponseEntity.noContent().build();
     }
 
@@ -74,7 +77,10 @@ public class DealDocumentsController {
     @PostMapping("/{statementId}/sign")
     public ResponseEntity<Void> signDocuments(@PathVariable UUID statementId, @RequestParam Boolean accepted) {
         log.info("Received /document/{statementId}/sign: {}, accepted={}", statementId, accepted);
+
         dealDocumentsService.processSigningDecision(statementId, accepted);
+
+        log.info("POST /document/{}/sign completed", statementId);
         return ResponseEntity.noContent().build();
     }
 
@@ -102,7 +108,10 @@ public class DealDocumentsController {
     @PostMapping("/{statementId}/code")
     public ResponseEntity<Void> verifySesCode(@PathVariable UUID statementId, @RequestParam String code) {
         log.info("Received /document/{statementId}/code: {}", statementId);
+
         dealDocumentsService.confirmSesCode(statementId, code);
+
+        log.info("POST /document/{}/code completed", statementId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -15,6 +15,8 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static ru.rogotovsky.deal.util.ExceptionMessages.INVALID_SES_CODE;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -25,6 +27,8 @@ public class DealDocumentsService {
 
     @Transactional
     public void sendDocuments(UUID statementId) {
+        log.debug("Start sendDocuments statementId={}", statementId);
+
         Statement statement = statementService.getById(statementId);
 
         statement = statementService.updateStatus(statement, ApplicationStatus.PREPARE_DOCUMENTS, ChangeType.AUTOMATIC);
@@ -34,42 +38,59 @@ public class DealDocumentsService {
         statement = statementService.save(statement);
 
         emailEventProducer.sendDocumentsEmail(statement);
+
+        log.debug("Documents email sent statementId={}", statementId);
     }
 
     @Transactional
     public void processSigningDecision(UUID statementId, Boolean accepted) {
+        log.debug("Start processSigningDecision statementId={}, accepted={}", statementId, accepted);
+
         Statement statement = statementService.getById(statementId);
 
         if (!accepted) {
+            log.debug("Client rejected conditions statementId={}", statementId);
+
             statement = statementService.updateStatus(statement, ApplicationStatus.CLIENT_DENIED, ChangeType.AUTOMATIC);
             statementService.save(statement);
             return;
         }
 
         String sesCode = generateSesCode();
+        log.debug("Generated SES code for statementId={}", statementId);
+
         statement.setSesCode(sesCode);
         statement = statementService.save(statement);
 
         emailEventProducer.sendSesEmail(statement);
+
+        log.debug("SES email sent statementId={}", statementId);
     }
 
     @Transactional
     public void confirmSesCode(UUID statementId, String code) {
+        log.debug("Start confirmSesCode statementId={}", statementId);
+
         Statement statement = statementService.getById(statementId);
 
         if (!code.equals(statement.getSesCode())) {
-            throw new InvalidSesCodeException("Invalid SES code");
+            log.warn("Invalid SES code statementId={}", statementId);
+            throw new InvalidSesCodeException(INVALID_SES_CODE);
         }
 
         statement = statementService.updateStatus(statement, ApplicationStatus.DOCUMENT_SIGNED, ChangeType.AUTOMATIC);
         statement.setSignDate(LocalDateTime.now());
         statement = statementService.save(statement);
 
+        log.debug("Document signed statementId={}", statementId);
+
         Credit credit = statement.getCredit();
         credit.setCreditStatus(CreditStatus.ISSUED);
 
         statement = statementService.updateStatus(statement, ApplicationStatus.CREDIT_ISSUED, ChangeType.AUTOMATIC);
         statement = statementService.save(statement);
+
+        log.info("Credit issued statementId={}", statementId);
 
         emailEventProducer.sendCreditIssuedEmail(statement);
     }

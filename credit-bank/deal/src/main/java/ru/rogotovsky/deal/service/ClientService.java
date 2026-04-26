@@ -7,7 +7,6 @@ import ru.rogotovsky.deal.dto.FinishRegistrationRequestDto;
 import ru.rogotovsky.deal.dto.LoanStatementRequestDto;
 import ru.rogotovsky.deal.entity.Client;
 import ru.rogotovsky.deal.mapper.ClientMapper;
-import ru.rogotovsky.deal.mapper.EmploymentMapper;
 import ru.rogotovsky.deal.repository.ClientRepository;
 
 @Slf4j
@@ -17,7 +16,6 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
-    private final EmploymentMapper employmentMapper;
 
     public Client createClient(LoanStatementRequestDto requestDto) {
         log.info("Creating client from LoanStatementRequestDto: {}", requestDto);

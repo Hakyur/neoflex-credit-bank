@@ -1,6 +1,6 @@
 package ru.rogotovsky.deal.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
@@ -9,14 +9,9 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfig {
 
     @Bean
-    public RestClient restClient() {
+    public RestClient restClient(@Value("${calculator.base-url}") String baseUrl) {
         return RestClient.builder()
-                .baseUrl("http://localhost:8081/calculator")
+                .baseUrl(baseUrl)
                 .build();
-    }
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
     }
 }

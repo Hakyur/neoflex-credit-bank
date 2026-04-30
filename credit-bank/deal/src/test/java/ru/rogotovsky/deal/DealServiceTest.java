@@ -6,7 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.rogotovsky.deal.client.CalculatorClient;
-import ru.rogotovsky.deal.dto.*;
+import ru.rogotovsky.deal.dto.CreditDto;
+import ru.rogotovsky.deal.dto.FinishRegistrationRequestDto;
+import ru.rogotovsky.deal.dto.LoanOfferDto;
+import ru.rogotovsky.deal.dto.LoanStatementRequestDto;
+import ru.rogotovsky.deal.dto.ScoringDataDto;
 import ru.rogotovsky.deal.entity.Client;
 import ru.rogotovsky.deal.entity.Credit;
 import ru.rogotovsky.deal.entity.Statement;
@@ -17,13 +21,18 @@ import ru.rogotovsky.deal.mapper.ScoringMapper;
 import ru.rogotovsky.deal.repository.CreditRepository;
 import ru.rogotovsky.deal.service.ClientService;
 import ru.rogotovsky.deal.service.DealService;
+import ru.rogotovsky.deal.service.EmailEventProducer;
 import ru.rogotovsky.deal.service.StatementService;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class DealServiceTest {
@@ -46,6 +55,9 @@ public class DealServiceTest {
     @Mock
     private CreditMapper creditMapper;
 
+    @Mock
+    private EmailEventProducer emailEventProducer;
+
     private DealService dealService;
 
     @BeforeEach
@@ -53,7 +65,7 @@ public class DealServiceTest {
         dealService = new DealService(
                 calculatorClient, statementService,
                 clientService, creditRepository,
-                scoringMapper, creditMapper
+                scoringMapper, creditMapper, emailEventProducer
         );
     }
 
@@ -97,16 +109,18 @@ public class DealServiceTest {
 
         Statement statement = new Statement();
 
-        when(statementService.getById(statementId)).thenReturn(statement);
+        when(statementService.getByIdForUpdate(statementId)).thenReturn(statement);
         when(statementService.updateStatus(statement, ApplicationStatus.APPROVED, ChangeType.AUTOMATIC))
                 .thenReturn(statement);
+        when(statementService.save(statement)).thenReturn(statement);
 
         dealService.applyLoanOffer(offer);
 
         assertThat(statement.getAppliedOffer()).isEqualTo(offer);
 
-        verify(statementService).getById(statementId);
+        verify(statementService).getByIdForUpdate(statementId);
         verify(statementService).save(statement);
+        verify(emailEventProducer).sendFinishRegistration(any(Statement.class));
     }
 
     @Test
@@ -135,13 +149,22 @@ public class DealServiceTest {
 
         when(statementService.updateStatus(statement, ApplicationStatus.CC_APPROVED, ChangeType.AUTOMATIC))
                 .thenReturn(statement);
+        when(statementService.save(statement)).thenReturn(statement);
+        doNothing().when(emailEventProducer).sendCreateDocuments(statement);
 
         dealService.calculateCredit(requestDto, statementId);
 
         assertThat(statement.getCredit()).isEqualTo(credit);
 
+        verify(statementService).getById(statementId);
+        verify(clientService).updateClientInformation(client, requestDto);
+        verify(clientService).saveClient(client);
+        verify(scoringMapper).toScoringDataDto(statement, requestDto);
         verify(calculatorClient).calculate(scoringDto, statement);
+        verify(creditMapper).toCredit(creditDto);
         verify(creditRepository).save(credit);
+        verify(statementService).updateStatus(statement, ApplicationStatus.CC_APPROVED,  ChangeType.AUTOMATIC);
         verify(statementService).save(statement);
+        verify(emailEventProducer).sendCreateDocuments(statement);
     }
 }

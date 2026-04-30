@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.rogotovsky.deal.dto.ErrorResponse;
 import ru.rogotovsky.deal.exception.CalculatorServiceException;
+import ru.rogotovsky.deal.exception.InvalidSesCodeException;
+import ru.rogotovsky.deal.exception.KafkaMessageSendException;
 import ru.rogotovsky.deal.exception.ScoringException;
 import ru.rogotovsky.deal.exception.StatementNotFoundException;
 
@@ -42,5 +44,27 @@ public class GlobalExceptionHandler {
                         "STATEMENT_NOT_FOUND",
                         LocalDateTime.now()
                 ));
+    }
+
+    @ExceptionHandler(InvalidSesCodeException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidSesCodeException(InvalidSesCodeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponse(
+                        e.getMessage(),
+                        "INVALID_SES_CODE",
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(KafkaMessageSendException.class)
+    public ResponseEntity<ErrorResponse> handleKafkaMessageSendException(KafkaMessageSendException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                new ErrorResponse(
+                        e.getMessage(),
+                        "KAFKA_MESSAGE_SEND_ERROR",
+                        LocalDateTime.now()
+                )
+        );
     }
 }

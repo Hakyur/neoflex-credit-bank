@@ -25,6 +25,7 @@ import static ru.rogotovsky.deal.util.ExceptionMessages.STATEMENT_NOT_FOUND;
 public class StatementService {
 
     private final StatementRepository repository;
+    private final EmailEventProducer emailEventProducer;
 
     public Statement getById(UUID id) {
         return repository.findById(id).orElseThrow(
@@ -69,12 +70,15 @@ public class StatementService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateStatusToDenied(Statement statement) {
+    public void updateStatusToDenied(UUID statementId) {
+        Statement statement = getById(statementId);
         log.debug("Updating statement status to CC_DENIED id={}", statement.getStatementId());
         statement.setStatus(ApplicationStatus.CC_DENIED);
         statement.getStatusHistory().add(
                 new StatusHistory(ApplicationStatus.CC_DENIED, LocalDateTime.now(), ChangeType.AUTOMATIC)
         );
-        repository.save(statement);
+        statement = repository.save(statement);
+
+        emailEventProducer.sendStatementDenied(statement);
     }
 }

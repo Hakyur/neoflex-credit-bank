@@ -5,7 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.rogotovsky.deal.client.CalculatorClient;
-import ru.rogotovsky.deal.dto.*;
+import ru.rogotovsky.deal.dto.CreditDto;
+import ru.rogotovsky.deal.dto.FinishRegistrationRequestDto;
+import ru.rogotovsky.deal.dto.LoanOfferDto;
+import ru.rogotovsky.deal.dto.LoanStatementRequestDto;
+import ru.rogotovsky.deal.dto.ScoringDataDto;
 import ru.rogotovsky.deal.entity.Client;
 import ru.rogotovsky.deal.entity.Credit;
 import ru.rogotovsky.deal.entity.Statement;
@@ -29,6 +33,7 @@ public class DealService {
     private final CreditRepository creditRepository;
     private final ScoringMapper scoringMapper;
     private final CreditMapper creditMapper;
+    private final EmailEventProducer emailEventProducer;
 
     @Transactional
     public List<LoanOfferDto> createLoanStatement(LoanStatementRequestDto requestDto) {
@@ -56,7 +61,10 @@ public class DealService {
         statement = statementService.updateStatus(statement, ApplicationStatus.APPROVED, ChangeType.AUTOMATIC);
         log.debug("Statement status has been changed to {}", statement.getStatus());
 
-        statementService.save(statement);
+        statement = statementService.save(statement);
+
+        emailEventProducer.sendFinishRegistration(statement);
+
         log.info("Loan offer applied for statementId={}", statement.getStatementId());
     }
 
@@ -83,6 +91,9 @@ public class DealService {
         log.debug("Statement status has been changed to {}", statement.getStatus());
 
         statementService.save(statement);
+
+        emailEventProducer.sendCreateDocuments(statement);
+
         log.info("Credit calculated and saved for statementId={}", statementId);
     }
 }

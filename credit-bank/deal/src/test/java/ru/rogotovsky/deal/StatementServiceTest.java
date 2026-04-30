@@ -34,7 +34,7 @@ public class StatementServiceTest {
 
     @BeforeEach
     public void setup() {
-        service = new StatementService(repository);
+        service = new StatementService(repository, null);
     }
 
     @Test
@@ -117,7 +117,7 @@ public class StatementServiceTest {
         statement.setStatusHistory(new ArrayList<>());
 
         when(repository.save(statement)).thenReturn(statement);
-        service.updateStatusToDenied(statement);
+        service.updateStatusToDenied(statement.getStatementId());
 
         assertEquals(ApplicationStatus.CC_DENIED, statement.getStatus());
 

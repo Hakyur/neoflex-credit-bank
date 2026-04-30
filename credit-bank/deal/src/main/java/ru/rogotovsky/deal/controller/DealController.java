@@ -9,7 +9,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.rogotovsky.deal.dto.ErrorResponse;
 import ru.rogotovsky.deal.dto.FinishRegistrationRequestDto;
 import ru.rogotovsky.deal.dto.LoanOfferDto;
@@ -91,12 +95,13 @@ public class DealController {
             )
     })
     @PostMapping("/offer/select")
-    public void selectOffer(@RequestBody LoanOfferDto requestDto) {
+    public ResponseEntity<Void> selectOffer(@RequestBody LoanOfferDto requestDto) {
         log.info("Received /offer/select request: {}", requestDto);
 
         dealService.applyLoanOffer(requestDto);
 
         log.info("POST /offer/select completed");
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(
@@ -128,11 +133,12 @@ public class DealController {
             )
     })
     @PostMapping("/calculate/{statementId}")
-    public void calculateCredit(@RequestBody FinishRegistrationRequestDto requestDto, @PathVariable String statementId) {
+    public ResponseEntity<Void> calculateCredit(@RequestBody FinishRegistrationRequestDto requestDto, @PathVariable UUID statementId) {
         log.info("Received /calculate/{statementId}: {}", requestDto);
 
-        dealService.calculateCredit(requestDto, UUID.fromString(statementId));
+        dealService.calculateCredit(requestDto, statementId);
 
         log.info("POST /deal/calculate/{} completed", statementId);
+        return ResponseEntity.noContent().build();
     }
 }

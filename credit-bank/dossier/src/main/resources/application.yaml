@@ -4,8 +4,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: drogotovsky@gmail.com
-    password: deom tspi ybhn wzsk
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -25,3 +25,6 @@ spring:
         spring.json.trusted.packages: "ru.rogotovsky.*"
 server:
   port: 8084
+deal:
+  document:
+    base-url: http://localhost:8082/deal/document

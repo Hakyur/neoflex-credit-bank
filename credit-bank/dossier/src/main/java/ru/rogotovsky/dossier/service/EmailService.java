@@ -14,29 +14,30 @@ import ru.rogotovsky.dossier.util.EmailTemplates;
 public class EmailService {
 
     private final JavaMailSender mailSender;
+    private final EmailTemplates emailTemplates;
 
     public void sendFinishRegistration(EmailMessage message) {
-        sendEmail(message, EmailTemplates.finishRegistration());
+        sendEmail(message, emailTemplates.finishRegistration());
     }
 
     public void sendCreateDocuments(EmailMessage message) {
-        sendEmail(message, EmailTemplates.createDocuments(message.statementId()));
+        sendEmail(message, emailTemplates.createDocuments(message.statementId()));
     }
 
     public void sendStatementDenied(EmailMessage message) {
-        sendEmail(message, EmailTemplates.statementDenied());
+        sendEmail(message, emailTemplates.statementDenied());
     }
 
     public void sendDocuments(EmailMessage message) {
-        sendEmail(message, EmailTemplates.sendDocuments(message.statementId()));
+        sendEmail(message, emailTemplates.sendDocuments(message.statementId()));
     }
 
     public void sendSes(EmailMessage message) {
-        sendEmail(message, EmailTemplates.sendSes(message.text(), message.statementId()));
+        sendEmail(message, emailTemplates.sendSes(message.text(), message.statementId()));
     }
 
     public void sendCreditIssued(EmailMessage message) {
-        sendEmail(message, EmailTemplates.creditIssued());
+        sendEmail(message, emailTemplates.creditIssued());
     }
 
     private void sendEmail(EmailMessage emailMessage, String text) {

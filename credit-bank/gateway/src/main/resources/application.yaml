@@ -6,3 +6,5 @@ server:
 services:
   statement:
     url: http://localhost:8083/statement
+  deal:
+    url: http://localhost:8082/deal

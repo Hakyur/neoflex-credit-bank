@@ -13,7 +13,6 @@ import ru.rogotovsky.gateway.dto.ErrorResponse;
 import ru.rogotovsky.gateway.dto.LoanOfferDto;
 import ru.rogotovsky.gateway.dto.LoanStatementRequestDto;
 import ru.rogotovsky.gateway.exception.GatewayServiceException;
-import ru.rogotovsky.gateway.util.StatementClientConstants;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -29,14 +28,14 @@ import static ru.rogotovsky.gateway.util.StatementClientConstants.SELECT_OFFER_U
 @Slf4j
 public class StatementClient {
 
-    private final RestClient restClient;
+    private final RestClient statementRestClient;
     private final ObjectMapper objectMapper;
 
     public List<LoanOfferDto> requestLoanOffers(LoanStatementRequestDto requestDto) {
         log.debug("Sending POST /statement request: {}", requestDto);
 
         try {
-            List<LoanOfferDto> response = restClient.post()
+            List<LoanOfferDto> response = statementRestClient.post()
                     .body(requestDto)
                     .retrieve()
                     .onStatus(HttpStatusCode::isError, (req, res) -> {
@@ -64,7 +63,7 @@ public class StatementClient {
         log.debug("Sending POST /statement/offer request: {}", requestDto);
 
         try {
-            restClient.post()
+            statementRestClient.post()
                     .uri(SELECT_OFFER_URI)
                     .body(requestDto)
                     .retrieve()

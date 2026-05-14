@@ -9,7 +9,14 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfig {
 
     @Bean
-    public RestClient restClient(@Value("${services.statement.url}") String url) {
+    public RestClient statementRestClient(@Value("${services.statement.url}") String url) {
+        return RestClient.builder()
+                .baseUrl(url)
+                .build();
+    }
+
+    @Bean
+    public RestClient dealRestClient(@Value("${services.deal.url}") String url) {
         return RestClient.builder()
                 .baseUrl(url)
                 .build();

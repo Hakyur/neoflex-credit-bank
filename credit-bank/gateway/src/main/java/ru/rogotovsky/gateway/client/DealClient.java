@@ -3,6 +3,7 @@ package ru.rogotovsky.gateway.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
@@ -10,13 +11,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import ru.rogotovsky.gateway.dto.ErrorResponse;
 import ru.rogotovsky.gateway.dto.FinishRegistrationRequestDto;
+import ru.rogotovsky.gateway.dto.StatementDto;
 import ru.rogotovsky.gateway.exception.GatewayServiceException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static ru.rogotovsky.gateway.util.DealClientConstants.CALCULATE_CREDIT;
+import static ru.rogotovsky.gateway.util.DealClientConstants.GET_STATEMENT;
+import static ru.rogotovsky.gateway.util.DealClientConstants.GET_STATEMENTS;
 import static ru.rogotovsky.gateway.util.DealClientConstants.SEND_DOCUMENTS;
 import static ru.rogotovsky.gateway.util.DealClientConstants.SIGN_DOCUMENTS;
 import static ru.rogotovsky.gateway.util.DealClientConstants.VERIFY_CODE;
@@ -146,6 +151,67 @@ public class DealClient {
             throw e;
         }  catch (Exception e) {
             log.error("Deal service unavailable", e);
+            throw new GatewayServiceException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    DEAL_SERVICE_UNAVAILABLE
+            );
+        }
+    }
+
+    public StatementDto requestGetStatementById(UUID statementId) {
+        log.debug("Sending GET /deal/admin/statement/{} request", statementId);
+
+        try {
+            StatementDto response = dealRestClient.get()
+                    .uri(GET_STATEMENT.formatted(statementId))
+                    .retrieve()
+                    .onStatus(HttpStatusCode::isError, (req, res) -> {
+                        log.error("Deal service returned error status: {}", res.getStatusCode());
+                        throw new GatewayServiceException(
+                                HttpStatus.valueOf(res.getStatusCode().value()),
+                                readErrorResponse(res)
+                        );
+                    })
+                    .body(StatementDto.class);
+            log.debug("Received statement from deal service, id={}", statementId);
+            return response;
+        } catch (GatewayServiceException e) {
+            log.error("Deal service exception: status={}, error={}", e.getStatus(), e.getError());
+            throw e;
+        } catch (Exception e) {
+            log.error("Deal service unavailable", e);
+            throw new GatewayServiceException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    DEAL_SERVICE_UNAVAILABLE
+            );
+        }
+    }
+
+    public List<StatementDto> requestGetAllStatements() {
+
+        log.debug("Sending GET /deal/admin/statement request");
+
+        try {
+            List<StatementDto> response = dealRestClient.get()
+                    .uri(GET_STATEMENTS)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::isError, (req, res) -> {
+                        log.error("Deal service returned error status: {}", res.getStatusCode());
+                        throw new GatewayServiceException(
+                                HttpStatus.valueOf(res.getStatusCode().value()),
+                                readErrorResponse(res)
+                        );
+                    })
+                    .body(new ParameterizedTypeReference<>() {});
+
+            log.debug("Received {} statements from deal service", response.size());
+            return response;
+
+        } catch (GatewayServiceException e) {
+            log.error("Deal service exception: status={}, error={}", e.getStatus(), e.getError());
+            throw e;
+        } catch (Exception e) {
+            log.error("Deal service unavailable while getting statements", e);
             throw new GatewayServiceException(
                     HttpStatus.SERVICE_UNAVAILABLE,
                     DEAL_SERVICE_UNAVAILABLE

@@ -8,6 +8,7 @@ import ru.rogotovsky.gateway.client.StatementClient;
 import ru.rogotovsky.gateway.dto.FinishRegistrationRequestDto;
 import ru.rogotovsky.gateway.dto.LoanOfferDto;
 import ru.rogotovsky.gateway.dto.LoanStatementRequestDto;
+import ru.rogotovsky.gateway.dto.StatementDto;
 
 import java.util.List;
 import java.util.UUID;
@@ -67,5 +68,23 @@ public class GatewayService {
         dealClient.requestVerifySesCode(statementId, code);
 
         log.debug("SES code verification completed, statementId={}", statementId);
+    }
+
+    public StatementDto getStatementById(UUID statementId) {
+        log.debug("Processing getStatementById, statementId={}", statementId);
+
+        StatementDto response = dealClient.requestGetStatementById(statementId);
+
+        log.debug("Statement retrieved successfully, statementId={}", statementId);
+        return response;
+    }
+
+    public List<StatementDto> getAllStatements() {
+        log.debug("Processing getAllStatements request");
+
+        List<StatementDto> response = dealClient.requestGetAllStatements();
+
+        log.debug("Retrieved {} statements", response.size());
+        return response;
     }
 }

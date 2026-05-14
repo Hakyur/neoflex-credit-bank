@@ -34,7 +34,7 @@ public class StatementServiceTest {
 
     @BeforeEach
     public void setup() {
-        service = new StatementService(repository, null);
+        service = new StatementService(repository, null, null);
     }
 
     @Test

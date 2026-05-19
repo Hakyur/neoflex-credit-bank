@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -64,7 +65,7 @@ public class GatewayStatementController {
             )
     })
     @PostMapping
-    public ResponseEntity<List<LoanOfferDto>> applyForLoan(@RequestBody LoanStatementRequestDto requestDto) {
+    public ResponseEntity<List<LoanOfferDto>> applyForLoan(@Valid @RequestBody LoanStatementRequestDto requestDto) {
         log.info("Received gateway /statement request: {}", requestDto);
 
         List<LoanOfferDto> response = gatewayService.applyForLoan(requestDto);

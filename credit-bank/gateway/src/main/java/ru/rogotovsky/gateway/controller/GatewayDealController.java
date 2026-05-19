@@ -168,7 +168,7 @@ public class GatewayDealController {
             )
     })
     @PostMapping("/document/{statementId}/code")
-    public ResponseEntity<Void> verifySesCode(@PathVariable UUID statementId, @RequestParam String code) {
+    public ResponseEntity<Void> verifySesCode(@PathVariable UUID statementId, @RequestBody String code) {
         log.info("Received /deal/document/{}/code request", statementId);
 
         gatewayService.verifySesCode(statementId, code);

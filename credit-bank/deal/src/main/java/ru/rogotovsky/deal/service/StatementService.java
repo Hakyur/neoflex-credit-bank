@@ -5,12 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.rogotovsky.deal.dto.StatementDto;
 import ru.rogotovsky.deal.entity.Client;
 import ru.rogotovsky.deal.entity.Statement;
 import ru.rogotovsky.deal.entity.StatusHistory;
 import ru.rogotovsky.deal.enums.ApplicationStatus;
 import ru.rogotovsky.deal.enums.ChangeType;
 import ru.rogotovsky.deal.exception.StatementNotFoundException;
+import ru.rogotovsky.deal.mapper.StatementMapper;
 import ru.rogotovsky.deal.repository.StatementRepository;
 
 import java.time.LocalDateTime;
@@ -26,6 +28,7 @@ public class StatementService {
 
     private final StatementRepository repository;
     private final EmailEventProducer emailEventProducer;
+    private final StatementMapper statementMapper;
 
     public Statement getById(UUID id) {
         return repository.findById(id).orElseThrow(
@@ -80,5 +83,25 @@ public class StatementService {
         statement = repository.save(statement);
 
         emailEventProducer.sendStatementDenied(statement);
+    }
+
+    public StatementDto getStatementById(UUID statementId) {
+        log.debug("Fetching statement id={}", statementId);
+
+        Statement statement = getById(statementId);
+
+        log.debug("Mapping statement id={} to dto", statementId);
+        return statementMapper.toDto(statement);
+    }
+
+    public List<StatementDto> getAllStatements() {
+        log.debug("Fetching all statements");
+
+        List<Statement> statements = repository.findAll();
+
+        log.debug("Mapping {} statements to dto", statements.size());
+        return statements.stream()
+                .map(statementMapper::toDto)
+                .toList();
     }
 }

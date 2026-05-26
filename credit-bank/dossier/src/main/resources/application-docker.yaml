@@ -1,0 +1,6 @@
+spring:
+  kafka:
+    bootstrap-servers: kafka:29092
+deal:
+  document:
+    base-url: http://deal:8082/deal/document

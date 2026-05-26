@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/neoflex-credit-bank-db
+    username: postgres
+    password: postgres
+  kafka:
+    bootstrap-servers: kafka:29092
+calculator:
+  base-url: http://calculator:8081/calculator

@@ -1,0 +1,136 @@
+version: '3.9'
+
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.7.8
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+    networks:
+      - microservice-net
+
+  kafka:
+    image: confluentinc/cp-kafka:7.7.8
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - microservice-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "8087:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    networks:
+      - microservice-net
+
+  db:
+    image: postgres:17-alpine
+    container_name: db
+    environment:
+      POSTGRES_DB: neoflex-credit-bank-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - microservice-net
+
+  calculator:
+    build:
+      context: ./calculator
+      dockerfile: Dockerfile
+    container_name: calculator
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+    networks:
+      - microservice-net
+
+  deal:
+    build:
+      context: ./deal
+      dockerfile: Dockerfile
+    container_name: deal
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db
+      - kafka
+      - calculator
+    restart: unless-stopped
+    networks:
+      - microservice-net
+
+  statement:
+    build:
+      context: ./statement
+      dockerfile: Dockerfile
+    container_name: statement
+    ports:
+      - "8083:8083"
+    depends_on:
+      - deal
+    restart: unless-stopped
+    networks:
+      - microservice-net
+
+  dossier:
+    build:
+      context: ./dossier
+      dockerfile: Dockerfile
+    container_name: dossier
+    ports:
+      - "8084:8084"
+    environment:
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+    depends_on:
+      - kafka
+      - deal
+    restart: unless-stopped
+    networks:
+      - microservice-net
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - deal
+      - statement
+    restart: unless-stopped
+    networks:
+      - microservice-net
+
+networks:
+  microservice-net:
+    driver: bridge
+
+volumes:
+  postgres-data:

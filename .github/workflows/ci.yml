@@ -34,24 +34,24 @@ jobs:
           cache: maven
 
       - name: Build and test calculator
-        run: cd calculator && mvn clean verify
+        run: cd credit-bank/calculator && mvn clean verify
 
       - name: Build and test deal
-        run: cd deal && mvn clean verify
+        run: cd credit-bank/deal && mvn clean verify
 
       - name: Build and test statement
-        run: cd statement && mvn clean verify
+        run: cd credit-bank/statement && mvn clean verify
 
       - name: Build and test dossier
-        run: cd dossier && mvn clean verify
+        run: cd credit-bank/dossier && mvn clean verify
 
       - name: Build and test gateway
-        run: cd gateway && mvn clean verify
+        run: cd credit-bank/gateway && mvn clean verify
 
       - name: SonarCloud analysis for calculator
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: cd calculator && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+        run: cd credit-bank/calculator && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.projectKey=hakyur_neoflex-calculator \
           -Dsonar.organization=hakyur \
           -Dsonar.host.url=https://sonarcloud.io
@@ -59,7 +59,7 @@ jobs:
       - name: SonarCloud analysis for deal
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: cd deal && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+        run: cd credit-bank/deal && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.projectKey=hakyur_neoflex-deal \
           -Dsonar.organization=hakyur \
           -Dsonar.host.url=https://sonarcloud.io
@@ -67,7 +67,7 @@ jobs:
       - name: SonarCloud analysis for statement
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: cd statement && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+        run: cd credit-bank/statement && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.projectKey=hakyur_neoflex-statement \
           -Dsonar.organization=hakyur \
           -Dsonar.host.url=https://sonarcloud.io
@@ -75,7 +75,7 @@ jobs:
       - name: SonarCloud analysis for dossier
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: cd dossier && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+        run: cd credit-bank/dossier && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.projectKey=hakyur_neoflex-dossier \
           -Dsonar.organization=hakyur \
           -Dsonar.host.url=https://sonarcloud.io
@@ -83,7 +83,7 @@ jobs:
       - name: SonarCloud analysis for gateway
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: cd gateway && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+        run: cd credit-bank/gateway && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.projectKey=hakyur_neoflex-gateway \
           -Dsonar.organization=hakyur \
           -Dsonar.host.url=https://sonarcloud.io
@@ -93,8 +93,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            ./calculator/target/site/jacoco/jacoco.xml
-            ./deal/target/site/jacoco/jacoco.xml
-            ./statement/target/site/jacoco/jacoco.xml
-            ./dossier/target/site/jacoco/jacoco.xml
-            ./gateway/target/site/jacoco/jacoco.xml
+            credit-bank/calculator/target/site/jacoco/jacoco.xml
+            credit-bank/deal/target/site/jacoco/jacoco.xml
+            credit-bank/statement/target/site/jacoco/jacoco.xml
+            credit-bank/dossier/target/site/jacoco/jacoco.xml
+            credit-bank/gateway/target/site/jacoco/jacoco.xml

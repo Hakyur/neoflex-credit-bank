@@ -49,12 +49,14 @@ jobs:
         run: cd credit-bank/gateway && mvn clean verify
 
       - name: SonarCloud analysis for calculator
+        uses: SonarSource/sonarcloud-github-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: cd credit-bank/calculator && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=hakyur_neoflex-calculator \
-          -Dsonar.organization=hakyur \
-          -Dsonar.host.url=https://sonarcloud.io
+        with:
+          projectBaseDir: credit-bank/calculator
+          args: >
+            -Dsonar.projectKey=hakyur_neoflex-calculator
+            -Dsonar.organization=hakyur
 
       - name: SonarCloud analysis for deal
         env:

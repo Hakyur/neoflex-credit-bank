@@ -103,8 +103,42 @@ jobs:
             -Dsonar.organization=hakyur
             -Dsonar.java.binaries=target/classes
 
-      - name: Upload coverage to Coveralls
+      - name: Upload coverage to Coveralls - calculator
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          files: credit-bank/calculator/target/site/jacoco/jacoco.xml,credit-bank/deal/target/site/jacoco/jacoco.xml,credit-bank/statement/target/site/jacoco/jacoco.xml,credit-bank/dossier/target/site/jacoco/jacoco.xml,credit-bank/gateway/target/site/jacoco/jacoco.xml
+          file: credit-bank/calculator/target/site/jacoco/jacoco.xml
+          allow-empty: true
+          format: jacoco
+
+      - name: Upload coverage to Coveralls - deal
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: credit-bank/deal/target/site/jacoco/jacoco.xml
+          allow-empty: true
+          format: jacoco
+
+      - name: Upload coverage to Coveralls - statement
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: credit-bank/statement/target/site/jacoco/jacoco.xml
+          allow-empty: true
+          format: jacoco
+
+      - name: Upload coverage to Coveralls - dossier
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: credit-bank/dossier/target/site/jacoco/jacoco.xml
+          allow-empty: true
+          format: jacoco
+
+      - name: Upload coverage to Coveralls - gateway
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: credit-bank/gateway/target/site/jacoco/jacoco.xml
+          allow-empty: true
+          format: jacoco

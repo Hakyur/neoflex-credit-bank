@@ -60,36 +60,48 @@ jobs:
             -Dsonar.java.binaries=target/classes
 
       - name: SonarCloud analysis for deal
+        uses: SonarSource/sonarcloud-github-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: cd credit-bank/deal && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=hakyur_neoflex-deal \
-          -Dsonar.organization=hakyur \
-          -Dsonar.host.url=https://sonarcloud.io
+        with:
+          projectBaseDir: credit-bank/deal
+          args: >
+            -Dsonar.projectKey=hakyur_neoflex-deal
+            -Dsonar.organization=hakyur
+            -Dsonar.java.binaries=target/classes
 
       - name: SonarCloud analysis for statement
+        uses: SonarSource/sonarcloud-github-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: cd credit-bank/statement && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=hakyur_neoflex-statement \
-          -Dsonar.organization=hakyur \
-          -Dsonar.host.url=https://sonarcloud.io
+        with:
+          projectBaseDir: credit-bank/statement
+          args: >
+            -Dsonar.projectKey=hakyur_neoflex-statement
+            -Dsonar.organization=hakyur
+            -Dsonar.java.binaries=target/classes
 
       - name: SonarCloud analysis for dossier
+        uses: SonarSource/sonarcloud-github-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: cd credit-bank/dossier && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=hakyur_neoflex-dossier \
-          -Dsonar.organization=hakyur \
-          -Dsonar.host.url=https://sonarcloud.io
+        with:
+          projectBaseDir: credit-bank/dossier
+          args: >
+            -Dsonar.projectKey=hakyur_neoflex-dossier
+            -Dsonar.organization=hakyur
+            -Dsonar.java.binaries=target/classes
 
       - name: SonarCloud analysis for gateway
+        uses: SonarSource/sonarcloud-github-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: cd credit-bank/gateway && mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=hakyur_neoflex-gateway \
-          -Dsonar.organization=hakyur \
-          -Dsonar.host.url=https://sonarcloud.io
+        with:
+          projectBaseDir: credit-bank/gateway
+          args: >
+            -Dsonar.projectKey=hakyur_neoflex-gateway
+            -Dsonar.organization=hakyur
+            -Dsonar.java.binaries=target/classes
 
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2

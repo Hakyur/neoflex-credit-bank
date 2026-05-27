@@ -57,6 +57,7 @@ jobs:
           args: >
             -Dsonar.projectKey=hakyur_neoflex-calculator
             -Dsonar.organization=hakyur
+            -Dsonar.java.binaries=target/classes
 
       - name: SonarCloud analysis for deal
         env:

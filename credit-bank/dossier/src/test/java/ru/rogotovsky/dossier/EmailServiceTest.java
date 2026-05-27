@@ -12,17 +12,22 @@ import org.springframework.mail.javamail.JavaMailSender;
 import ru.rogotovsky.dossier.dto.EmailMessage;
 import ru.rogotovsky.dossier.enums.Theme;
 import ru.rogotovsky.dossier.service.EmailService;
+import ru.rogotovsky.dossier.util.EmailTemplates;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EmailServiceTest {
 
     @Mock
     private JavaMailSender mailSender;
+
+    @Mock
+    private EmailTemplates emailTemplates;
 
     @InjectMocks
     private EmailService emailService;
@@ -39,11 +44,14 @@ class EmailServiceTest {
                 ""
         );
 
+        String expected = "Ваша заявка предварительно одобрена, завершите оформление";
+
+        when(emailTemplates.finishRegistration()).thenReturn(expected);
+
         emailService.sendFinishRegistration(message);
 
         verify(mailSender).send(captor.capture());
 
-        String expected = "Ваша заявка предварительно одобрена, завершите оформление";
         String actual = captor.getValue().getText();
 
         assertEquals(expected, actual);
@@ -54,16 +62,19 @@ class EmailServiceTest {
         UUID id = UUID.randomUUID();
         EmailMessage message = new EmailMessage("test@mail.com", Theme.CREATE_DOCUMENTS, id, "");
 
-        emailService.sendCreateDocuments(message);
-
-        verify(mailSender).send(captor.capture());
-
         String expected = """
                 Кредит одобрен.
                 
                 Для продолжения сформируйте документы:
                 http://localhost:8082/deal/document/%s/send
                 """.formatted(id);
+
+        when(emailTemplates.createDocuments(id)).thenReturn(expected);
+
+        emailService.sendCreateDocuments(message);
+
+        verify(mailSender).send(captor.capture());
+
         String actual = captor.getValue().getText();
 
         assertEquals(expected, actual);
@@ -77,11 +88,14 @@ class EmailServiceTest {
                 UUID.randomUUID(),
                 "");
 
+        String expected = "Ваша заявка на кредит отклонена";
+
+        when(emailTemplates.statementDenied()).thenReturn(expected);
+
         emailService.sendStatementDenied(message);
 
         verify(mailSender).send(captor.capture());
 
-        String expected = "Ваша заявка на кредит отклонена";
         String actual = captor.getValue().getText();
 
         assertEquals(expected, actual);
@@ -92,16 +106,19 @@ class EmailServiceTest {
         UUID id = UUID.randomUUID();
         EmailMessage message = new EmailMessage("test@mail.com", Theme.SEND_DOCUMENTS, id, "");
 
-        emailService.sendDocuments(message);
-
-        verify(mailSender).send(captor.capture());
-
         String expected = """
                 Ваши документы готовы.
                 
                 Для подписания перейдите по ссылке:
                 http://localhost:8082/deal/document/%s/sign
                 """.formatted(id);
+
+        when(emailTemplates.sendDocuments(id)).thenReturn(expected);
+
+        emailService.sendDocuments(message);
+
+        verify(mailSender).send(captor.capture());
+
         String actual = captor.getValue().getText();
 
         assertEquals(expected, actual);
@@ -114,10 +131,6 @@ class EmailServiceTest {
 
         EmailMessage message = new EmailMessage("test@mail.com", Theme.SEND_SES, id, code);
 
-        emailService.sendSes(message);
-
-        verify(mailSender).send(captor.capture());
-
         String expected = """
                 Вы подтвердили согласие с условиями.
                 
@@ -126,6 +139,13 @@ class EmailServiceTest {
                 Для завершения отправьте код:
                 http://localhost:8082/deal/document/%s/code
                 """.formatted(code, id);
+
+        when(emailTemplates.sendSes(code, id)).thenReturn(expected);
+
+        emailService.sendSes(message);
+
+        verify(mailSender).send(captor.capture());
+
         String actual = captor.getValue().getText();
 
         assertEquals(expected, actual);
@@ -140,11 +160,14 @@ class EmailServiceTest {
                 ""
         );
 
+        String expected = "Кредит успешно выдан. Поздравляем!";
+
+        when(emailTemplates.creditIssued()).thenReturn(expected);
+
         emailService.sendCreditIssued(message);
 
         verify(mailSender).send(captor.capture());
 
-        String expected = "Кредит успешно выдан. Поздравляем!";
         String actual = captor.getValue().getText();
 
         assertEquals(expected, actual);

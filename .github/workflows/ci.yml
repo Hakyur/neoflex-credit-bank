@@ -108,7 +108,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           file: credit-bank/calculator/target/site/jacoco/jacoco.xml
-          allow-empty: true
+          allow-empty: false
           format: jacoco
 
       - name: Upload coverage to Coveralls - deal
@@ -116,7 +116,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           file: credit-bank/deal/target/site/jacoco/jacoco.xml
-          allow-empty: true
+          allow-empty: false
           format: jacoco
 
       - name: Upload coverage to Coveralls - statement
@@ -124,7 +124,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           file: credit-bank/statement/target/site/jacoco/jacoco.xml
-          allow-empty: true
+          allow-empty: false
           format: jacoco
 
       - name: Upload coverage to Coveralls - dossier
@@ -132,7 +132,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           file: credit-bank/dossier/target/site/jacoco/jacoco.xml
-          allow-empty: true
+          allow-empty: false
           format: jacoco
 
       - name: Upload coverage to Coveralls - gateway
@@ -140,5 +140,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           file: credit-bank/gateway/target/site/jacoco/jacoco.xml
-          allow-empty: true
+          allow-empty: false
           format: jacoco
+
+      - name: Validate docker-compose syntax
+        run: docker-compose -f docker-compose.yaml config
+
+      - name: Build all Docker images
+        run: docker-compose -f docker-compose.yaml build

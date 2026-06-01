@@ -1,0 +1,5 @@
+services:
+  statement:
+    url: http://statement:8083/statement
+  deal:
+    url: http://deal:8082/deal

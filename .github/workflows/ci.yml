@@ -1,0 +1,150 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI Pipeline
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5.2.0
+        with:
+          distribution: 'temurin'
+          java-version: 21
+          cache: maven
+
+      - name: Build and test calculator
+        run: cd credit-bank/calculator && mvn clean verify
+
+      - name: Build and test deal
+        run: cd credit-bank/deal && mvn clean verify -Dtest=!DealServiceLockTest
+
+      - name: Build and test statement
+        run: cd credit-bank/statement && mvn clean verify
+
+      - name: Build and test dossier
+        run: cd credit-bank/dossier && mvn clean verify
+
+      - name: Build and test gateway
+        run: cd credit-bank/gateway && mvn clean verify
+
+      - name: SonarCloud analysis for calculator
+        uses: SonarSource/sonarcloud-github-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: credit-bank/calculator
+          args: >
+            -Dsonar.projectKey=hakyur_neoflex-calculator
+            -Dsonar.organization=hakyur
+            -Dsonar.java.binaries=target/classes
+
+      - name: SonarCloud analysis for deal
+        uses: SonarSource/sonarcloud-github-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: credit-bank/deal
+          args: >
+            -Dsonar.projectKey=hakyur_neoflex-deal
+            -Dsonar.organization=hakyur
+            -Dsonar.java.binaries=target/classes
+
+      - name: SonarCloud analysis for statement
+        uses: SonarSource/sonarcloud-github-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: credit-bank/statement
+          args: >
+            -Dsonar.projectKey=hakyur_neoflex-statement
+            -Dsonar.organization=hakyur
+            -Dsonar.java.binaries=target/classes
+
+      - name: SonarCloud analysis for dossier
+        uses: SonarSource/sonarcloud-github-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: credit-bank/dossier
+          args: >
+            -Dsonar.projectKey=hakyur_neoflex-dossier
+            -Dsonar.organization=hakyur
+            -Dsonar.java.binaries=target/classes
+
+      - name: SonarCloud analysis for gateway
+        uses: SonarSource/sonarcloud-github-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: credit-bank/gateway
+          args: >
+            -Dsonar.projectKey=hakyur_neoflex-gateway
+            -Dsonar.organization=hakyur
+            -Dsonar.java.binaries=target/classes
+
+      - name: Upload coverage to Coveralls - calculator
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: credit-bank/calculator/target/site/jacoco/jacoco.xml
+          allow-empty: false
+          format: jacoco
+
+      - name: Upload coverage to Coveralls - deal
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: credit-bank/deal/target/site/jacoco/jacoco.xml
+          allow-empty: false
+          format: jacoco
+
+      - name: Upload coverage to Coveralls - statement
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: credit-bank/statement/target/site/jacoco/jacoco.xml
+          allow-empty: false
+          format: jacoco
+
+      - name: Upload coverage to Coveralls - dossier
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: credit-bank/dossier/target/site/jacoco/jacoco.xml
+          allow-empty: false
+          format: jacoco
+
+      - name: Upload coverage to Coveralls - gateway
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: credit-bank/gateway/target/site/jacoco/jacoco.xml
+          allow-empty: false
+          format: jacoco
+
+      - name: Validate docker-compose syntax
+        run: docker compose -f credit-bank/docker-compose.yaml config
+
+      - name: Build all Docker images
+        run: docker compose -f credit-bank/docker-compose.yaml build

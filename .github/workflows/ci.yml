@@ -144,7 +144,7 @@ jobs:
           format: jacoco
 
       - name: Validate docker-compose syntax
-        run: docker-compose -f docker-compose.yaml config
+        run: docker-compose -f credit-bank/docker-compose.yaml config
 
       - name: Build all Docker images
-        run: docker-compose -f docker-compose.yaml build
+        run: docker-compose -f credit-bank/docker-compose.yaml build
